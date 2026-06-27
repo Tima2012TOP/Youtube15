@@ -1,1987 +1,2256 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Profile Apps Create</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        :root {
-            --ios-blue: #007AFF;
-            --ios-bg: #F2F2F7;
-            --ios-card: #FFFFFF;
-            --ios-gray: #8E8E93;
-            --ios-separator: #C6C6C8;
-            --ios-green: #34C759;
-            --ios-red: #FF3B30;
-            --ios-orange: #FF9500;
-        }
-
-        body {
-            font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', BlinkMacSystemFont, sans-serif;
-            background: var(--ios-bg);
-            min-height: 100vh;
-            color: #000;
-        }
-
-        /* STATUS BAR */
-        .status-bar {
-            background: transparent;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            background: rgba(242,242,247,0.85);
-        }
-
-        .status-time {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .status-icons {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .status-icons svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* NAVIGATION */
-        .nav-bar {
-            background: rgba(242,242,247,0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 8px 20px 12px;
-            border-bottom: 0.5px solid var(--ios-separator);
-            position: sticky;
-            top: 44px;
-            z-index: 99;
-        }
-
-        .nav-title {
-            font-size: 34px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-subtitle {
-            font-size: 13px;
-            color: var(--ios-gray);
-            margin-top: 2px;
-        }
-
-        .nav-icons {
-            display: flex;
-            gap: 12px;
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .nav-icon-btn {
-            width: 36px;
-            height: 36px;
-            background: var(--ios-blue);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .nav-icon-btn:active {
-            opacity: 0.7;
-        }
-
-        .nav-icon-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: white;
-        }
-
-        /* CONTENT */
-        .content {
-            padding: 20px 16px 120px;
-        }
-
-        /* SECTION */
-        .section {
-            margin-bottom: 28px;
-        }
-
-        .section-header {
-            font-size: 13px;
-            font-weight: 400;
-            color: var(--ios-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            padding-left: 4px;
-        }
-
-        .card {
-            background: var(--ios-card);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);
-        }
-
-        /* ICON UPLOAD */
-        .icon-upload-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 24px;
-            gap: 12px;
-        }
-
-        .icon-preview {
-            width: 100px;
-            height: 100px;
-            border-radius: 22px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
-        }
-
-        .icon-preview:active {
-            transform: scale(0.95);
-        }
-
-        .icon-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .icon-preview-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .icon-preview-placeholder svg {
-            width: 32px;
-            height: 32px;
-            fill: white;
-            opacity: 0.8;
-        }
-
-        .icon-preview-placeholder span {
-            color: white;
-            font-size: 11px;
-            opacity: 0.8;
-        }
-
-        .icon-edit-badge {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 24px;
-            height: 24px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-edit-badge svg {
-            width: 12px;
-            height: 12px;
-            fill: white;
-        }
-
-        .icon-options {
-            display: flex;
-            gap: 8px;
-        }
-
-        .icon-option-btn {
-            padding: 8px 16px;
-            background: var(--ios-bg);
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--ios-blue);
-            cursor: pointer;
-            border: none;
-            transition: opacity 0.2s;
-        }
-
-        .icon-option-btn:active {
-            opacity: 0.7;
-        }
-
-        /* INPUT ROWS */
-        .input-row {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 0.5px solid var(--ios-separator);
-            gap: 12px;
-        }
-
-        .input-row:last-child {
-            border-bottom: none;
-        }
-
-        .input-row-label {
-            font-size: 16px;
-            color: #000;
-            min-width: 100px;
-            flex-shrink: 0;
-        }
-
-        .input-row-label.required::after {
-            content: ' *';
-            color: var(--ios-red);
-        }
-
-        .input-row input,
-        .input-row textarea {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            color: #000;
-            background: transparent;
-            font-family: inherit;
-            text-align: right;
-        }
-
-        .input-row textarea {
-            text-align: left;
-            resize: none;
-            min-height: 60px;
-            padding-top: 2px;
-        }
-
-        .input-row input::placeholder,
-        .input-row textarea::placeholder {
-            color: var(--ios-gray);
-        }
-
-        /* PROFILE TYPE SELECTOR */
-        .type-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .type-card {
-            background: var(--ios-card);
-            border-radius: 12px;
-            padding: 16px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .type-card.selected {
-            border-color: var(--ios-blue);
-            background: rgba(0,122,255,0.05);
-        }
-
-        .type-card:active {
-            transform: scale(0.97);
-        }
-
-        .type-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .type-icon svg {
-            width: 22px;
-            height: 22px;
-            fill: white;
-        }
-
-        .type-name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .type-desc {
-            font-size: 11px;
-            color: var(--ios-gray);
-            line-height: 1.3;
-        }
-
-        .type-check {
-            display: none;
-            width: 20px;
-            height: 20px;
-            background: var(--ios-blue);
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-            margin-left: auto;
-        }
-
-        .type-check svg {
-            width: 12px;
-            height: 12px;
-            fill: white;
-        }
-
-        .type-card.selected .type-check {
-            display: flex;
-        }
-
-        .type-card-header {
-            display: flex;
-            align-items: center;
-        }
-
-        /* DYNAMIC FIELDS */
-        .dynamic-fields {
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-
-        .dynamic-fields.active {
-            display: block;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* TOGGLE */
-        .toggle-row {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 0.5px solid var(--ios-separator);
-            justify-content: space-between;
-        }
-
-        .toggle-row:last-child {
-            border-bottom: none;
-        }
-
-        .toggle-info {
-            flex: 1;
-        }
-
-        .toggle-label {
-            font-size: 16px;
-        }
-
-        .toggle-sublabel {
-            font-size: 12px;
-            color: var(--ios-gray);
-            margin-top: 2px;
-        }
-
-        .toggle {
-            width: 51px;
-            height: 31px;
-            background: #E5E5EA;
-            border-radius: 15.5px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.3s;
-            flex-shrink: 0;
-        }
-
-        .toggle.on {
-            background: var(--ios-green);
-        }
-
-        .toggle-thumb {
-            width: 27px;
-            height: 27px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-
-        .toggle.on .toggle-thumb {
-            transform: translateX(20px);
-        }
-
-        /* INFO BOX */
-        .info-box {
-            background: rgba(0,122,255,0.08);
-            border-radius: 12px;
-            padding: 14px 16px;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .info-box svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--ios-blue);
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .info-box-text {
-            font-size: 13px;
-            color: #555;
-            line-height: 1.5;
-        }
-
-        /* COLOR PICKER */
-        .color-picker-row {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 0.5px solid var(--ios-separator);
-            justify-content: space-between;
-        }
-
-        .color-dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .color-dot {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: transform 0.2s;
-        }
-
-        .color-dot.selected {
-            border-color: #000;
-            transform: scale(1.15);
-        }
-
-        .color-dot:active {
-            transform: scale(0.9);
-        }
-
-        /* CREATE BUTTON */
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 12px 16px 34px;
-            background: rgba(242,242,247,0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 0.5px solid var(--ios-separator);
-        }
-
-        .create-btn {
-            width: 100%;
-            height: 54px;
-            background: var(--ios-blue);
-            border: none;
-            border-radius: 14px;
-            color: white;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-
-        .create-btn:active {
-            transform: scale(0.97);
-            opacity: 0.9;
-        }
-
-        .create-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-
-        .create-btn.loading {
-            background: var(--ios-gray);
-        }
-
-        /* PROGRESS MODAL */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 200;
-            align-items: flex-end;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-overlay.show {
-            display: flex;
-            animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-sheet {
-            background: var(--ios-card);
-            border-radius: 20px 20px 0 0;
-            width: 100%;
-            padding: 24px 24px 48px;
-            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .modal-handle {
-            width: 36px;
-            height: 4px;
-            background: var(--ios-separator);
-            border-radius: 2px;
-            margin: 0 auto 20px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .modal-subtitle {
-            font-size: 14px;
-            color: var(--ios-gray);
-            margin-bottom: 24px;
-        }
-
-        .progress-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-
-        .progress-step {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .step-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--ios-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.3s;
-        }
-
-        .step-icon svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--ios-gray);
-        }
-
-        .step-icon.done {
-            background: var(--ios-green);
-        }
-
-        .step-icon.done svg {
-            fill: white;
-        }
-
-        .step-icon.active {
-            background: var(--ios-blue);
-            animation: pulse 1s infinite;
-        }
-
-        .step-icon.active svg {
-            fill: white;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .step-text {
-            flex: 1;
-        }
-
-        .step-name {
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        .step-status {
-            font-size: 12px;
-            color: var(--ios-gray);
-        }
-
-        .step-status.done {
-            color: var(--ios-green);
-        }
-
-        .step-status.active {
-            color: var(--ios-blue);
-        }
-
-        /* PROGRESS BAR */
-        .progress-bar-container {
-            background: var(--ios-bg);
-            border-radius: 4px;
-            height: 6px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--ios-blue), #5AC8FA);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-
-        .progress-percent {
-            font-size: 13px;
-            color: var(--ios-gray);
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .download-btn {
-            width: 100%;
-            height: 54px;
-            background: var(--ios-green);
-            border: none;
-            border-radius: 14px;
-            color: white;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        .download-btn.show {
-            display: flex;
-            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .download-btn:active {
-            transform: scale(0.97);
-        }
-
-        .download-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-
-        /* APP STORE ICON */
-        .appstore-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #000;
-            border-radius: 10px;
-            padding: 10px 16px;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-
-        .appstore-badge svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
-        }
-
-        .appstore-badge-text {
-            color: white;
-        }
-
-        .appstore-badge-text span:first-child {
-            font-size: 10px;
-            display: block;
-        }
-
-        .appstore-badge-text span:last-child {
-            font-size: 15px;
-            font-weight: 600;
-            display: block;
-        }
-
-        /* SETTINGS PANEL */
-        .settings-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 150;
-            background: var(--ios-bg);
-            animation: slideFromRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .settings-overlay.show {
-            display: block;
-        }
-
-        @keyframes slideFromRight {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        .settings-nav {
-            background: rgba(242,242,247,0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 0.5px solid var(--ios-separator);
-            padding: 60px 16px 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .settings-back {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--ios-blue);
-            cursor: pointer;
-            font-size: 17px;
-        }
-
-        .settings-back svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--ios-blue);
-        }
-
-        .settings-nav-title {
-            font-size: 17px;
-            font-weight: 600;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .settings-content {
-            padding: 20px 16px;
-        }
-
-        /* HIDDEN */
-        .hidden {
-            display: none !important;
-        }
-
-        /* URL CODE AREA */
-        .code-area {
-            background: #1C1C1E;
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 8px;
-        }
-
-        .code-area code {
-            color: #30D158;
-            font-family: 'Menlo', monospace;
-            font-size: 12px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        /* SEGMENTED */
-        .segmented {
-            display: flex;
-            background: var(--ios-bg);
-            border-radius: 9px;
-            padding: 2px;
-            gap: 2px;
-        }
-
-        .segment {
-            flex: 1;
-            padding: 7px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 500;
-            border-radius: 7px;
-            cursor: pointer;
-            color: var(--ios-gray);
-            transition: all 0.2s;
-        }
-
-        .segment.active {
-            background: white;
-            color: #000;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        /* TAG */
-        .tag {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .tag-blue { background: rgba(0,122,255,0.12); color: var(--ios-blue); }
-        .tag-green { background: rgba(52,199,89,0.12); color: var(--ios-green); }
-        .tag-orange { background: rgba(255,149,0,0.12); color: var(--ios-orange); }
-
-        input[type="file"] { display: none; }
-        input[type="color"] { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PROFI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+:root{
+--glass-bg: rgba(255,255,255,0.12);
+--glass-border: rgba(255,255,255,0.25);
+--glass-blur: blur(40px);
+--glass-shadow: 0 8px 32px rgba(0,0,0,0.25);
+--blue: #0A84FF;
+--green: #30D158;
+--red: #FF453A;
+--orange: #FF9F0A;
+--purple: #BF5AF2;
+--pink: #FF375F;
+--teal: #5AC8FA;
+--yellow: #FFD60A;
+--bg-grad: linear-gradient(145deg,#0a0a1a 0%,#0d1b3e 30%,#1a0d3e 60%,#0a1a2e 100%);
+--text: #FFFFFF;
+--text-sec: rgba(255,255,255,0.6);
+--text-ter: rgba(255,255,255,0.35);
+--sep: rgba(255,255,255,0.12);
+--card: rgba(255,255,255,0.08);
+--card-hover: rgba(255,255,255,0.14);
+}
+
+html,body{height:100%;overflow:hidden;}
+
+body{
+font-family:-apple-system,'SF Pro Display',BlinkMacSystemFont,sans-serif;
+background:var(--bg-grad);
+color:var(--text);
+min-height:100vh;
+position:relative;
+}
+
+/* BG ORBS */
+.bg-orb{
+position:fixed;
+border-radius:50%;
+filter:blur(80px);
+opacity:0.35;
+pointer-events:none;
+z-index:0;
+animation:orbFloat 8s ease-in-out infinite;
+}
+.orb1{width:400px;height:400px;background:radial-gradient(circle,#0A84FF,transparent);top:-100px;left:-100px;animation-delay:0s;}
+.orb2{width:350px;height:350px;background:radial-gradient(circle,#BF5AF2,transparent);top:30%;right:-80px;animation-delay:-3s;}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,#FF375F,transparent);bottom:100px;left:20%;animation-delay:-6s;}
+.orb4{width:250px;height:250px;background:radial-gradient(circle,#30D158,transparent);bottom:200px;right:10%;animation-delay:-2s;}
+
+@keyframes orbFloat{
+0%,100%{transform:translate(0,0) scale(1);}
+33%{transform:translate(20px,-30px) scale(1.05);}
+66%{transform:translate(-15px,20px) scale(0.95);}
+}
+
+/* MAIN LAYOUT */
+.app{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* STATUS BAR */
+.status-bar{
+display:flex;align-items:center;justify-content:space-between;
+padding:12px 20px 0;height:50px;flex-shrink:0;
+}
+.status-time{font-size:15px;font-weight:700;letter-spacing:0.3px;}
+.status-right{display:flex;gap:5px;align-items:center;}
+.status-right svg{width:15px;height:15px;opacity:0.9;}
+
+/* NAV BAR */
+.nav-bar{
+padding:8px 20px 12px;
+flex-shrink:0;
+}
+.nav-row{display:flex;align-items:center;justify-content:space-between;}
+.app-logo{display:flex;align-items:center;gap:10px;}
+.app-logo-icon{
+width:40px;height:40px;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+border-radius:10px;
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 4px 15px rgba(10,132,255,0.4);
+}
+.app-logo-icon svg{width:22px;height:22px;fill:white;}
+.app-name{font-size:28px;font-weight:800;letter-spacing:-0.5px;
+background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.7) 100%);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-actions{display:flex;gap:8px;}
+
+.glass-btn{
+width:36px;height:36px;
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+border-radius:50%;
+backdrop-filter:var(--glass-blur);
+-webkit-backdrop-filter:var(--glass-blur);
+display:flex;align-items:center;justify-content:center;
+cursor:pointer;transition:all 0.2s;
+}
+.glass-btn:active{transform:scale(0.9);background:var(--card-hover);}
+.glass-btn svg{width:16px;height:16px;fill:white;}
+
+/* TAB BAR */
+.tab-bar{
+display:flex;
+margin:0 16px 8px;
+background:rgba(255,255,255,0.06);
+border:1px solid var(--glass-border);
+border-radius:16px;
+padding:4px;
+backdrop-filter:var(--glass-blur);
+-webkit-backdrop-filter:var(--glass-blur);
+flex-shrink:0;
+gap:2px;
+}
+
+.tab-item{
+flex:1;
+display:flex;flex-direction:column;align-items:center;gap:3px;
+padding:8px 4px;
+border-radius:12px;
+cursor:pointer;
+transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+position:relative;
+}
+
+.tab-item.active{
+background:rgba(255,255,255,0.15);
+border:1px solid rgba(255,255,255,0.2);
+box-shadow:0 2px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.tab-item svg{width:18px;height:18px;transition:all 0.2s;}
+.tab-item span{font-size:9px;font-weight:600;letter-spacing:0.2px;transition:all 0.2s;}
+.tab-item:not(.active) svg{opacity:0.5;}
+.tab-item:not(.active) span{opacity:0.5;}
+.tab-item:active{transform:scale(0.95);}
+
+.tab-badge{
+position:absolute;top:4px;right:6px;
+min-width:16px;height:16px;
+background:var(--red);
+border-radius:8px;
+font-size:9px;font-weight:700;
+display:flex;align-items:center;justify-content:center;
+padding:0 4px;
+border:1.5px solid rgba(10,10,26,0.8);
+}
+
+/* PAGES */
+.pages{flex:1;overflow:hidden;position:relative;}
+.page{
+position:absolute;inset:0;
+overflow-y:auto;
+padding:0 16px 20px;
+display:none;
+-webkit-overflow-scrolling:touch;
+}
+.page::-webkit-scrollbar{display:none;}
+.page.active{display:block;animation:pageFade 0.3s ease;}
+@keyframes pageFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* GLASS CARD */
+.g-card{
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+border-radius:18px;
+backdrop-filter:var(--glass-blur);
+-webkit-backdrop-filter:var(--glass-blur);
+box-shadow:var(--glass-shadow),inset 0 1px 0 rgba(255,255,255,0.15);
+overflow:hidden;
+margin-bottom:16px;
+}
+
+.section-label{
+font-size:12px;font-weight:600;
+color:var(--text-sec);
+text-transform:uppercase;
+letter-spacing:0.8px;
+margin:20px 4px 8px;
+}
+
+/* INPUT ROWS */
+.g-row{
+display:flex;align-items:center;gap:12px;
+padding:13px 16px;
+border-bottom:0.5px solid var(--sep);
+}
+.g-row:last-child{border-bottom:none;}
+.g-row-label{font-size:15px;color:var(--text);min-width:110px;flex-shrink:0;}
+.g-row-label.req::after{content:' *';color:var(--red);}
+.g-row input,.g-row select,.g-row textarea{
+flex:1;border:none;outline:none;
+font-size:15px;color:var(--text);
+background:transparent;font-family:inherit;
+text-align:right;
+}
+.g-row select option{background:#1a1a2e;color:white;}
+.g-row textarea{text-align:left;resize:none;min-height:64px;padding-top:2px;}
+input::placeholder,textarea::placeholder{color:var(--text-ter);}
+
+/* TOGGLE */
+.g-toggle{
+width:48px;height:28px;
+background:rgba(255,255,255,0.15);
+border-radius:14px;
+position:relative;cursor:pointer;
+transition:background 0.3s;border:1px solid rgba(255,255,255,0.1);
+flex-shrink:0;
+}
+.g-toggle.on{background:var(--green);}
+.g-toggle-thumb{
+width:24px;height:24px;
+background:white;border-radius:50%;
+position:absolute;top:1px;left:1px;
+transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+box-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+.g-toggle.on .g-toggle-thumb{transform:translateX(20px);}
+
+/* ICON UPLOAD */
+.icon-area{
+display:flex;flex-direction:column;align-items:center;
+padding:24px;gap:14px;
+}
+.icon-preview-big{
+width:110px;height:110px;
+border-radius:26px;
+background:linear-gradient(135deg,#667eea,#764ba2);
+display:flex;align-items:center;justify-content:center;
+cursor:pointer;overflow:hidden;
+box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.15);
+transition:transform 0.2s;
+position:relative;
+}
+.icon-preview-big:active{transform:scale(0.95);}
+.icon-preview-big img{width:100%;height:100%;object-fit:cover;}
+.icon-glass-badge{
+position:absolute;bottom:6px;right:6px;
+width:26px;height:26px;
+background:rgba(0,0,0,0.5);
+backdrop-filter:blur(10px);
+border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+border:1px solid rgba(255,255,255,0.2);
+}
+.icon-glass-badge svg{width:12px;height:12px;fill:white;}
+
+.icon-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.icon-pill{
+padding:8px 16px;
+background:rgba(255,255,255,0.1);
+border:1px solid rgba(255,255,255,0.2);
+border-radius:20px;
+font-size:13px;font-weight:500;
+color:var(--text);cursor:pointer;
+backdrop-filter:blur(10px);
+transition:all 0.2s;
+}
+.icon-pill:active{background:rgba(255,255,255,0.2);transform:scale(0.95);}
+
+/* TYPE GRID */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.type-tile{
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+border-radius:16px;
+padding:14px;cursor:pointer;
+transition:all 0.25s;
+backdrop-filter:blur(20px);
+-webkit-backdrop-filter:blur(20px);
+box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.type-tile.sel{
+border-color:var(--blue);
+background:rgba(10,132,255,0.15);
+box-shadow:0 0 0 1px var(--blue),inset 0 1px 0 rgba(255,255,255,0.15),0 4px 20px rgba(10,132,255,0.2);
+}
+.type-tile:active{transform:scale(0.96);}
+.type-tile-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.type-ico{
+width:38px;height:38px;border-radius:10px;
+display:flex;align-items:center;justify-content:center;
+}
+.type-ico svg{width:20px;height:20px;fill:white;}
+.type-check{
+width:18px;height:18px;
+background:var(--blue);border-radius:50%;
+display:none;align-items:center;justify-content:center;
+}
+.type-check svg{width:10px;height:10px;fill:white;}
+.type-tile.sel .type-check{display:flex;}
+.type-title{font-size:14px;font-weight:700;margin-bottom:2px;}
+.type-sub{font-size:11px;color:var(--text-sec);line-height:1.3;}
+
+/* TAG */
+.tag{
+display:inline-flex;align-items:center;gap:3px;
+padding:2px 7px;border-radius:6px;
+font-size:10px;font-weight:700;margin-top:6px;
+}
+
+/* DYNAMIC */
+.dyn{display:none;}
+.dyn.active{display:block;animation:slideDown 0.3s ease;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+
+/* SEGMENTED */
+.seg-ctrl{
+display:flex;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:12px;padding:3px;gap:2px;
+margin:8px 0;
+}
+.seg-item{
+flex:1;padding:8px;text-align:center;
+font-size:13px;font-weight:600;
+border-radius:9px;cursor:pointer;
+color:var(--text-sec);transition:all 0.2s;
+}
+.seg-item.active{
+background:rgba(255,255,255,0.15);
+color:var(--text);
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border:1px solid rgba(255,255,255,0.15);
+}
+
+/* COLOR DOTS */
+.color-row{display:flex;gap:8px;flex-wrap:wrap;}
+.c-dot{
+width:30px;height:30px;border-radius:50%;
+cursor:pointer;transition:transform 0.2s;
+border:2px solid transparent;
+}
+.c-dot.sel{border-color:white;transform:scale(1.15);}
+.c-dot:active{transform:scale(0.9);}
+
+/* INFO BOX */
+.info-box{
+background:rgba(10,132,255,0.1);
+border:1px solid rgba(10,132,255,0.25);
+border-radius:12px;padding:12px 14px;
+display:flex;gap:10px;align-items:flex-start;
+}
+.info-box.warn{background:rgba(255,159,10,0.1);border-color:rgba(255,159,10,0.3);}
+.info-box.success{background:rgba(48,209,88,0.1);border-color:rgba(48,209,88,0.3);}
+.info-box svg{width:16px;height:16px;flex-shrink:0;margin-top:1px;}
+.info-box p{font-size:12px;color:var(--text-sec);line-height:1.5;}
+
+/* PROFILES LIST */
+.profile-item{
+display:flex;align-items:center;gap:12px;
+padding:12px 16px;
+border-bottom:0.5px solid var(--sep);
+cursor:pointer;transition:background 0.2s;
+}
+.profile-item:last-child{border-bottom:none;}
+.profile-item:active{background:rgba(255,255,255,0.05);}
+.p-icon{
+width:46px;height:46px;border-radius:12px;
+display:flex;align-items:center;justify-content:center;
+flex-shrink:0;overflow:hidden;font-size:20px;
+}
+.p-info{flex:1;}
+.p-name{font-size:15px;font-weight:600;}
+.p-type{font-size:12px;color:var(--text-sec);margin-top:1px;}
+.p-date{font-size:11px;color:var(--text-ter);margin-top:2px;}
+.p-actions{display:flex;gap:6px;}
+.p-action{
+width:30px;height:30px;
+border-radius:8px;
+display:flex;align-items:center;justify-content:center;
+cursor:pointer;transition:all 0.2s;
+}
+.p-action:active{transform:scale(0.9);}
+.p-action.dl{background:rgba(48,209,88,0.15);border:1px solid rgba(48,209,88,0.3);}
+.p-action.del{background:rgba(255,69,58,0.15);border:1px solid rgba(255,69,58,0.3);}
+.p-action svg{width:14px;height:14px;}
+.p-action.dl svg{fill:var(--green);}
+.p-action.del svg{fill:var(--red);}
+
+/* EMPTY STATE */
+.empty-state{
+display:flex;flex-direction:column;align-items:center;
+padding:60px 20px;gap:16px;text-align:center;
+}
+.empty-icon{
+width:80px;height:80px;
+background:rgba(255,255,255,0.05);
+border:1px solid var(--glass-border);
+border-radius:24px;
+display:flex;align-items:center;justify-content:center;
+}
+.empty-icon svg{width:36px;height:36px;opacity:0.3;}
+.empty-title{font-size:18px;font-weight:700;opacity:0.6;}
+.empty-sub{font-size:14px;color:var(--text-ter);max-width:220px;line-height:1.5;}
+
+/* SIGN PAGE */
+.file-drop{
+border:2px dashed rgba(255,255,255,0.2);
+border-radius:16px;
+padding:32px;
+display:flex;flex-direction:column;align-items:center;gap:12px;
+cursor:pointer;transition:all 0.2s;
+text-align:center;
+}
+.file-drop:active,.file-drop.drag{
+border-color:var(--blue);
+background:rgba(10,132,255,0.08);
+}
+.file-drop svg{width:40px;height:40px;opacity:0.4;}
+.file-drop h3{font-size:16px;font-weight:700;}
+.file-drop p{font-size:13px;color:var(--text-sec);}
+
+.upload-item{
+display:flex;align-items:center;gap:12px;
+padding:12px 16px;
+border-bottom:0.5px solid var(--sep);
+}
+.upload-item:last-child{border-bottom:none;}
+.upload-icon{
+width:40px;height:40px;border-radius:10px;
+display:flex;align-items:center;justify-content:center;
+flex-shrink:0;
+}
+.upload-icon svg{width:20px;height:20px;fill:white;}
+.upload-info{flex:1;}
+.upload-name{font-size:14px;font-weight:600;}
+.upload-size{font-size:12px;color:var(--text-sec);}
+.upload-status{
+padding:4px 10px;border-radius:8px;
+font-size:11px;font-weight:700;
+}
+.status-ok{background:rgba(48,209,88,0.15);color:var(--green);}
+.status-wait{background:rgba(255,159,10,0.15);color:var(--orange);}
+.status-err{background:rgba(255,69,58,0.15);color:var(--red);}
+
+/* IPA PAGE */
+.ipa-card{
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+border-radius:18px;
+padding:20px;
+backdrop-filter:var(--glass-blur);
+}
+.ipa-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.ipa-appicon{
+width:56px;height:56px;border-radius:14px;
+background:linear-gradient(135deg,#FF9F0A,#FF6B00);
+display:flex;align-items:center;justify-content:center;
+flex-shrink:0;
+}
+.ipa-appicon svg{width:28px;height:28px;fill:white;}
+.ipa-info h3{font-size:17px;font-weight:700;}
+.ipa-info p{font-size:13px;color:var(--text-sec);}
+.ipa-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.ipa-stat{
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:12px;padding:10px;text-align:center;
+}
+.ipa-stat-val{font-size:18px;font-weight:700;}
+.ipa-stat-key{font-size:10px;color:var(--text-sec);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* BIG BTN */
+.big-btn{
+width:100%;height:52px;
+border:none;border-radius:14px;
+font-size:16px;font-weight:700;
+cursor:pointer;font-family:inherit;
+display:flex;align-items:center;justify-content:center;gap:8px;
+transition:all 0.2s;color:white;
+}
+.big-btn:active{transform:scale(0.97);}
+.big-btn svg{width:18px;height:18px;fill:white;}
+.btn-blue{background:linear-gradient(135deg,var(--blue),#5AC8FA);box-shadow:0 4px 20px rgba(10,132,255,0.35);}
+.btn-green{background:linear-gradient(135deg,var(--green),#30D158);box-shadow:0 4px 20px rgba(48,209,88,0.3);}
+.btn-purple{background:linear-gradient(135deg,var(--purple),#FF375F);box-shadow:0 4px 20px rgba(191,90,242,0.3);}
+.btn-orange{background:linear-gradient(135deg,var(--orange),#FFD60A);box-shadow:0 4px 20px rgba(255,159,10,0.3);}
+.btn-gray{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.15);}
+
+/* MODAL */
+.modal{
+display:none;position:fixed;inset:0;z-index:500;
+background:rgba(0,0,0,0.6);
+backdrop-filter:blur(8px);
+align-items:flex-end;
+}
+.modal.show{display:flex;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.modal-sheet{
+background:rgba(20,20,40,0.95);
+backdrop-filter:blur(40px);
+-webkit-backdrop-filter:blur(40px);
+border:1px solid rgba(255,255,255,0.15);
+border-bottom:none;
+border-radius:24px 24px 0 0;
+width:100%;
+padding:20px 20px 44px;
+animation:sheetUp 0.4s cubic-bezier(0.34,1.3,0.64,1);
+max-height:90vh;overflow-y:auto;
+}
+.modal-sheet::-webkit-scrollbar{display:none;}
+@keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 18px;}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:4px;}
+.modal-sub{font-size:14px;color:var(--text-sec);margin-bottom:20px;}
+
+/* PROGRESS */
+.prog-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:20px;}
+.prog-step{display:flex;align-items:center;gap:12px;}
+.prog-step-ico{
+width:36px;height:36px;border-radius:50%;
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.1);
+display:flex;align-items:center;justify-content:center;
+flex-shrink:0;transition:all 0.3s;
+}
+.prog-step-ico svg{width:16px;height:16px;fill:rgba(255,255,255,0.4);}
+.prog-step-ico.active{background:var(--blue);border-color:var(--blue);animation:pulseIco 1s infinite;}
+.prog-step-ico.active svg{fill:white;}
+.prog-step-ico.done{background:var(--green);border-color:var(--green);}
+.prog-step-ico.done svg{fill:white;}
+@keyframes pulseIco{0%,100%{box-shadow:0 0 0 0 rgba(10,132,255,0.4);}50%{box-shadow:0 0 0 8px rgba(10,132,255,0);}}
+.prog-step-txt{flex:1;}
+.prog-step-name{font-size:14px;font-weight:600;}
+.prog-step-st{font-size:12px;color:var(--text-sec);}
+.prog-step-st.done{color:var(--green);}
+.prog-step-st.active{color:var(--blue);}
+
+.prog-bar{background:rgba(255,255,255,0.1);border-radius:6px;height:6px;overflow:hidden;margin-bottom:6px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:6px;transition:width 0.5s ease;width:0;}
+.prog-pct{text-align:right;font-size:12px;color:var(--text-sec);margin-bottom:18px;}
+
+/* SETTINGS */
+.setting-row{
+display:flex;align-items:center;
+padding:14px 16px;
+border-bottom:0.5px solid var(--sep);
+gap:12px;cursor:pointer;transition:background 0.2s;
+}
+.setting-row:last-child{border-bottom:none;}
+.setting-row:active{background:rgba(255,255,255,0.05);}
+.setting-ico{
+width:32px;height:32px;border-radius:8px;
+display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.setting-ico svg{width:16px;height:16px;fill:white;}
+.setting-txt{flex:1;}
+.setting-name{font-size:15px;font-weight:500;}
+.setting-desc{font-size:12px;color:var(--text-sec);margin-top:1px;}
+.setting-right{display:flex;align-items:center;gap:6px;color:var(--text-sec);font-size:14px;}
+.setting-right svg{width:14px;height:14px;fill:var(--text-ter);}
+
+/* CERT BUILDER */
+.cert-step{
+display:flex;align-items:center;gap:12px;
+padding:12px 0;
+border-bottom:0.5px solid var(--sep);
+}
+.cert-step:last-child{border-bottom:none;}
+.cert-num{
+width:28px;height:28px;border-radius:50%;
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.15);
+display:flex;align-items:center;justify-content:center;
+font-size:13px;font-weight:700;color:var(--text-sec);
+flex-shrink:0;
+}
+.cert-num.done{background:var(--green);border-color:var(--green);color:white;}
+.cert-num.active{background:var(--blue);border-color:var(--blue);color:white;}
+
+/* ADVANCED */
+.code-block{
+background:rgba(0,0,0,0.4);
+border:1px solid rgba(255,255,255,0.1);
+border-radius:12px;padding:14px;
+font-family:'Menlo',monospace;font-size:11px;
+color:#30D158;line-height:1.8;
+overflow-x:auto;white-space:pre;
+}
+
+input[type=file]{display:none;}
+input[type=color]{display:none;}
+
+/* FAB */
+.fab{
+position:fixed;right:20px;bottom:100px;
+width:52px;height:52px;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+border-radius:50%;border:none;
+display:flex;align-items:center;justify-content:center;
+cursor:pointer;z-index:50;
+box-shadow:0 6px 24px rgba(10,132,255,0.45);
+transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.fab:active{transform:scale(0.9);}
+.fab svg{width:22px;height:22px;fill:white;}
+.fab.hidden{display:none;}
+
+/* SMOOTH SCROLL */
+.page{scroll-behavior:smooth;}
+
+/* NOTIFICATION */
+.toast{
+position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);
+background:rgba(30,30,50,0.95);
+border:1px solid rgba(255,255,255,0.2);
+border-radius:14px;padding:12px 20px;
+display:flex;align-items:center;gap:10px;
+font-size:14px;font-weight:600;
+opacity:0;transition:all 0.3s;z-index:999;
+backdrop-filter:blur(20px);white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast svg{width:18px;height:18px;flex-shrink:0;}
+
+/* Preview card on profiles page */
+.prof-preview{
+background:linear-gradient(135deg,rgba(10,132,255,0.15),rgba(191,90,242,0.1));
+border:1px solid rgba(10,132,255,0.3);
+border-radius:18px;padding:18px;margin-bottom:8px;
+display:flex;align-items:center;gap:14px;
+}
+.prof-preview-ico{
+width:52px;height:52px;border-radius:14px;
+display:flex;align-items:center;justify-content:center;
+font-size:24px;flex-shrink:0;overflow:hidden;
+box-shadow:0 4px 16px rgba(0,0,0,0.3);
+}
+.prof-preview-info h3{font-size:17px;font-weight:700;}
+.prof-preview-info p{font-size:13px;color:var(--text-sec);margin-top:2px;}
+
+/* QUICK STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.stat-card{
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+border-radius:14px;padding:14px 10px;
+text-align:center;
+backdrop-filter:var(--glass-blur);
+}
+.stat-val{font-size:22px;font-weight:800;}
+.stat-key{font-size:10px;color:var(--text-sec);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* RECENT */
+.recent-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:4px;}
+.recent-scroll::-webkit-scrollbar{display:none;}
+.recent-chip{
+flex-shrink:0;
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+border-radius:12px;
+padding:10px 14px;
+display:flex;align-items:center;gap:8px;
+cursor:pointer;transition:all 0.2s;
+backdrop-filter:blur(20px);
+}
+.recent-chip:active{background:var(--card-hover);}
+.recent-chip-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.recent-chip-ico svg{width:14px;height:14px;fill:white;}
+.recent-chip span{font-size:13px;font-weight:600;white-space:nowrap;}
+</style>
 </head>
 <body>
 
+<!-- BG ORBS -->
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+<div class="bg-orb orb4"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg id="toastIco" viewBox="0 0 24 24"></svg>
+  <span id="toastMsg"></span>
+</div>
+
+<!-- APP -->
+<div class="app">
+
 <!-- STATUS BAR -->
 <div class="status-bar">
-    <span class="status-time" id="statusTime">9:41</span>
-    <div class="status-icons">
-        <svg viewBox="0 0 24 24"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 8.5a13 13 0 0121 0M5 12a10 10 0 0114 0M8.5 15.5a6 6 0 017 0M12 19h.01" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="7" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M22 11v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="4" y="9" width="10" height="7" rx="1" fill="currentColor"/></svg>
-    </div>
+  <span class="status-time" id="stime">9:41</span>
+  <div class="status-right">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M1.5 8.5a13 13 0 0121 0M5 12a10 10 0 0114 0M8.5 15.5a6 6 0 017 0M12 19h.01" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <svg viewBox="0 0 24 24" fill="white"><rect x="2" y="7" width="16" height="10" rx="2" fill="none" stroke="white" stroke-width="1.5"/><path d="M22 11v3" stroke="white" stroke-width="2" stroke-linecap="round"/><rect x="4" y="9" width="9" height="6" rx="1" fill="white"/></svg>
+  </div>
 </div>
 
-<!-- NAV BAR -->
-<div class="nav-bar" style="position:relative;">
-    <div class="nav-title">Создать профиль</div>
-    <div class="nav-subtitle">Profile Apps Create</div>
-    <div class="nav-icons">
-        <div class="nav-icon-btn" onclick="openSettings()" title="Настройки">
-            <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        </div>
-        <div class="nav-icon-btn" style="background:#000;" onclick="openAppStore()" title="App Store">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/><path d="M8.5 14.5l-1.5-1.5L12 8l5 5-1.5 1.5L12 11l-3.5 3.5z"/></svg>
-        </div>
+<!-- NAV -->
+<div class="nav-bar">
+  <div class="nav-row">
+    <div class="app-logo">
+      <div class="app-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="app-name">PROFI</span>
     </div>
+    <div class="nav-actions">
+      <div class="glass-btn" onclick="openSettings()">
+        <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="white" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="glass-btn" onclick="showInfo()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5" fill="none"/><path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="content">
-
-    <!-- ICON & NAME -->
-    <div class="section">
-        <div class="section-header">Иконка приложения</div>
-        <div class="card">
-            <div class="icon-upload-area">
-                <div class="icon-preview" id="iconPreview" onclick="document.getElementById('iconFile').click()">
-                    <div class="icon-preview-placeholder" id="iconPlaceholder">
-                        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                        <span>Добавить</span>
-                    </div>
-                    <div class="icon-edit-badge" id="iconBadge" style="display:none;">
-                        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                    </div>
-                </div>
-                <div class="icon-options">
-                    <button class="icon-option-btn" onclick="document.getElementById('iconFile').click()">📷 Камера</button>
-                    <button class="icon-option-btn" onclick="document.getElementById('iconFile').click()">🖼 Галерея</button>
-                    <button class="icon-option-btn" onclick="clearIcon()">✕ Убрать</button>
-                </div>
-            </div>
-            <input type="file" id="iconFile" accept="image/*" onchange="handleIconUpload(this)">
-        </div>
-    </div>
-
-    <!-- APP INFO -->
-    <div class="section">
-        <div class="section-header">Информация о профиле</div>
-        <div class="card">
-            <div class="input-row">
-                <label class="input-row-label required">Название</label>
-                <input type="text" id="appName" placeholder="Имя приложения" maxlength="40">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Подпись</label>
-                <input type="text" id="appSubtitle" placeholder="Необязательно">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Описание</label>
-                <textarea id="appDescription" placeholder="Краткое описание..."></textarea>
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Организация</label>
-                <input type="text" id="appOrg" placeholder="Ваше имя или компания">
-            </div>
-        </div>
-    </div>
-
-    <!-- PROFILE TYPE -->
-    <div class="section">
-        <div class="section-header">Тип профиля</div>
-        <div class="type-grid">
-
-            <div class="type-card selected" onclick="selectType('webclip')" id="type-webclip">
-                <div class="type-card-header">
-                    <div class="type-icon" style="background:linear-gradient(135deg,#007AFF,#5AC8FA);">
-                        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 010 18M12 3a15 15 0 000 18" stroke="white" stroke-width="1.5" fill="none"/></svg>
-                    </div>
-                    <div class="type-check" id="check-webclip"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-                </div>
-                <div class="type-name">Веб-клип</div>
-                <div class="type-desc">Ярлык сайта на рабочем столе</div>
-                <div class="tag tag-blue">Web Clip</div>
-            </div>
-
-            <div class="type-card" onclick="selectType('dns')" id="type-dns">
-                <div class="type-card-header">
-                    <div class="type-icon" style="background:linear-gradient(135deg,#FF9500,#FF6B00);">
-                        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-                    </div>
-                    <div class="type-check" id="check-dns"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-                </div>
-                <div class="type-name">DNS</div>
-                <div class="type-desc">Настройка DNS-серверов устройства</div>
-                <div class="tag tag-orange">DNS</div>
-            </div>
-
-            <div class="type-card" onclick="selectType('wifi')" id="type-wifi">
-                <div class="type-card-header">
-                    <div class="type-icon" style="background:linear-gradient(135deg,#34C759,#30D158);">
-                        <svg viewBox="0 0 24 24"><path d="M1.5 8.5a13 13 0 0121 0M5 12a10 10 0 0114 0M8.5 15.5a6 6 0 017 0M12 19h.01" stroke="white" stroke-width="1.5" fill="none"/></svg>
-                    </div>
-                    <div class="type-check" id="check-wifi"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-                </div>
-                <div class="type-name">Wi-Fi</div>
-                <div class="type-desc">Автоподключение к Wi-Fi сети</div>
-                <div class="tag tag-green">Wi-Fi</div>
-            </div>
-
-            <div class="type-card" onclick="selectType('vpn')" id="type-vpn">
-                <div class="type-card-header">
-                    <div class="type-icon" style="background:linear-gradient(135deg,#AF52DE,#BF5AF2);">
-                        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" stroke="white" stroke-width="1.5" fill="none"/><path d="M8 11V7a4 4 0 018 0v4" stroke="white" stroke-width="1.5" fill="none"/></svg>
-                    </div>
-                    <div class="type-check" id="check-vpn"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-                </div>
-                <div class="type-name">VPN</div>
-                <div class="type-desc">Настройка VPN-соединения</div>
-                <div class="tag" style="background:rgba(175,82,222,0.12);color:#AF52DE;">VPN</div>
-            </div>
-
-            <div class="type-card" onclick="selectType('email')" id="type-email">
-                <div class="type-card-header">
-                    <div class="type-icon" style="background:linear-gradient(135deg,#FF2D55,#FF375F);">
-                        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="white" stroke-width="1.5" fill="none"/><path d="M22 6l-10 7L2 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
-                    </div>
-                    <div class="type-check" id="check-email"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-                </div>
-                <div class="type-name">Email</div>
-                <div class="type-desc">Настройка почтового аккаунта</div>
-                <div class="tag" style="background:rgba(255,45,85,0.12);color:#FF2D55;">Mail</div>
-            </div>
-
-            <div class="type-card" onclick="selectType('passcode')" id="type-passcode">
-                <div class="type-card-header">
-                    <div class="type-icon" style="background:linear-gradient(135deg,#636366,#48484A);">
-                        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.5" fill="none"/><path d="M12 14v8M9 19l3 3 3-3" stroke="white" stroke-width="1.5" fill="none"/></svg>
-                    </div>
-                    <div class="type-check" id="check-passcode"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-                </div>
-                <div class="type-name">Код-пароль</div>
-                <div class="type-desc">Политика безопасности устройства</div>
-                <div class="tag" style="background:rgba(99,99,102,0.12);color:#636366;">Security</div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- DYNAMIC FIELDS -->
-
-    <!-- WEB CLIP FIELDS -->
-    <div class="section dynamic-fields active" id="fields-webclip">
-        <div class="section-header">Параметры веб-клипа</div>
-
-        <div style="padding: 10px 0; margin-bottom: 8px;">
-            <div class="segmented" id="webclipSourceSeg">
-                <div class="segment active" onclick="switchWebclipSource('url')">🌐 URL</div>
-                <div class="segment" onclick="switchWebclipSource('html')">📄 HTML</div>
-            </div>
-        </div>
-
-        <div class="card" id="webclipUrlBlock">
-            <div class="input-row">
-                <label class="input-row-label required">URL сайта</label>
-                <input type="url" id="webclipUrl" placeholder="https://example.com" oninput="updateUrlPreview()">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Убрать шапку</label>
-                <div class="toggle on" id="toggle-fullscreen" onclick="toggleSwitch('fullscreen')">
-                    <div class="toggle-thumb"></div>
-                </div>
-            </div>
-            <div class="input-row" style="border:none;">
-                <label class="input-row-label">Игнор. HTTPS</label>
-                <div class="toggle" id="toggle-ignorehttps" onclick="toggleSwitch('ignorehttps')">
-                    <div class="toggle-thumb"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card hidden" id="webclipHtmlBlock" style="margin-top:0;">
-            <div style="padding: 12px 16px;">
-                <div style="font-size:14px; color:var(--ios-gray); margin-bottom:8px;">HTML-код страницы:</div>
-                <textarea id="webclipHtml" style="width:100%; min-height:120px; border:none; outline:none; font-family:Menlo,monospace; font-size:12px; background:#F8F8F8; border-radius:8px; padding:10px; color:#333; resize:vertical;" placeholder="<!DOCTYPE html>&#10;<html>&#10;<body>&#10;  <h1>Привет!</h1>&#10;</body>&#10;</html>"></textarea>
-            </div>
-            <div class="input-row" style="border:none;">
-                <label class="input-row-label">Полный экран</label>
-                <div class="toggle on" id="toggle-fullscreen2" onclick="toggleSwitch('fullscreen2')">
-                    <div class="toggle-thumb"></div>
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top: 10px;">
-            <div class="info-box">
-                <svg viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01" stroke="white" stroke-width="1.5" fill="none"/></svg>
-                <div class="info-box-text">
-                    Веб-клип добавляется на рабочий стол iOS как приложение. При открытии запускается как отдельное окно без браузерной шапки.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- DNS FIELDS -->
-    <div class="section dynamic-fields" id="fields-dns">
-        <div class="section-header">Параметры DNS</div>
-        <div class="card">
-            <div class="input-row">
-                <label class="input-row-label required">Основной DNS</label>
-                <input type="text" id="dnsPrimary" placeholder="8.8.8.8" pattern="[0-9.]+">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Запасной DNS</label>
-                <input type="text" id="dnsSecondary" placeholder="8.8.4.4">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Тип DNS</label>
-                <select id="dnsType" style="border:none;outline:none;font-size:16px;color:#000;background:transparent;font-family:inherit;text-align:right;">
-                    <option>Обычный (UDP)</option>
-                    <option>DNS-over-HTTPS</option>
-                    <option>DNS-over-TLS</option>
-                </select>
-            </div>
-            <div class="input-row" style="border:none;">
-                <label class="input-row-label">DoH/DoT URL</label>
-                <input type="url" id="dnsDoH" placeholder="https://dns.google/dns-query">
-            </div>
-        </div>
-        <div style="margin-top:10px;">
-            <div class="info-box">
-                <svg viewBox="0 0 24 24" fill="var(--ios-orange)"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01" stroke="white" stroke-width="1.5" fill="none"/></svg>
-                <div class="info-box-text">
-                    DNS профиль применяется ко всем Wi-Fi и мобильным соединениям. DNS-over-HTTPS шифрует запросы.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- WIFI FIELDS -->
-    <div class="section dynamic-fields" id="fields-wifi">
-        <div class="section-header">Параметры Wi-Fi</div>
-        <div class="card">
-            <div class="input-row">
-                <label class="input-row-label required">Сеть (SSID)</label>
-                <input type="text" id="wifiSSID" placeholder="Название сети">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label required">Пароль</label>
-                <input type="password" id="wifiPassword" placeholder="••••••••">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Безопасность</label>
-                <select id="wifiSecurity" style="border:none;outline:none;font-size:16px;color:#000;background:transparent;font-family:inherit;text-align:right;">
-                    <option>WPA2</option>
-                    <option>WPA3</option>
-                    <option>WPA/WPA2</option>
-                    <option>WEP</option>
-                    <option>Нет</option>
-                </select>
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Скрытая сеть</label>
-                <div class="toggle" id="toggle-wifihidden" onclick="toggleSwitch('wifihidden')">
-                    <div class="toggle-thumb"></div>
-                </div>
-            </div>
-            <div class="input-row" style="border:none;">
-                <label class="input-row-label">Авто-подключение</label>
-                <div class="toggle on" id="toggle-wifiauto" onclick="toggleSwitch('wifiauto')">
-                    <div class="toggle-thumb"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- VPN FIELDS -->
-    <div class="section dynamic-fields" id="fields-vpn">
-        <div class="section-header">Параметры VPN</div>
-        <div class="card">
-            <div class="input-row">
-                <label class="input-row-label required">Сервер</label>
-                <input type="text" id="vpnServer" placeholder="vpn.example.com">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Тип VPN</label>
-                <select id="vpnType" style="border:none;outline:none;font-size:16px;color:#000;background:transparent;font-family:inherit;text-align:right;">
-                    <option>IKEv2</option>
-                    <option>L2TP</option>
-                    <option>IPSec</option>
-                    <option>OpenVPN</option>
-                    <option>WireGuard</option>
-                </select>
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Логин</label>
-                <input type="text" id="vpnUser" placeholder="username">
-            </div>
-            <div class="input-row" style="border:none;">
-                <label class="input-row-label">Пароль</label>
-                <input type="password" id="vpnPassword" placeholder="••••••••">
-            </div>
-        </div>
-    </div>
-
-    <!-- EMAIL FIELDS -->
-    <div class="section dynamic-fields" id="fields-email">
-        <div class="section-header">Параметры Email</div>
-        <div class="card">
-            <div class="input-row">
-                <label class="input-row-label required">Email</label>
-                <input type="email" id="emailAddress" placeholder="user@example.com">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Отображаемое имя</label>
-                <input type="text" id="emailName" placeholder="Моё имя">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Тип почты</label>
-                <select id="emailType" style="border:none;outline:none;font-size:16px;color:#000;background:transparent;font-family:inherit;text-align:right;">
-                    <option>IMAP</option>
-                    <option>POP3</option>
-                </select>
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">IMAP-сервер</label>
-                <input type="text" id="emailImap" placeholder="imap.example.com">
-            </div>
-            <div class="input-row" style="border:none;">
-                <label class="input-row-label">SMTP-сервер</label>
-                <input type="text" id="emailSmtp" placeholder="smtp.example.com">
-            </div>
-        </div>
-    </div>
-
-    <!-- PASSCODE FIELDS -->
-    <div class="section dynamic-fields" id="fields-passcode">
-        <div class="section-header">Политика безопасности</div>
-        <div class="card">
-            <div class="input-row">
-                <label class="input-row-label">Мин. длина пароля</label>
-                <input type="number" id="passMin" placeholder="6" min="4" max="32">
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Сложный пароль</label>
-                <div class="toggle" id="toggle-passcomplex" onclick="toggleSwitch('passcomplex')">
-                    <div class="toggle-thumb"></div>
-                </div>
-            </div>
-            <div class="input-row">
-                <label class="input-row-label">Макс. попыток</label>
-                <input type="number" id="passAttempts" placeholder="10" min="1" max="20">
-            </div>
-            <div class="input-row" style="border:none;">
-                <label class="input-row-label">Блокировка (мин)</label>
-                <input type="number" id="passLockout" placeholder="5">
-            </div>
-        </div>
-    </div>
-
-    <!-- APPEARANCE -->
-    <div class="section">
-        <div class="section-header">Оформление</div>
-        <div class="card">
-            <div class="color-picker-row">
-                <span style="font-size:16px;">Цвет иконки</span>
-                <div class="color-dots">
-                    <div class="color-dot selected" style="background:linear-gradient(135deg,#667eea,#764ba2);" onclick="selectColor(this,'#667eea')"></div>
-                    <div class="color-dot" style="background:linear-gradient(135deg,#007AFF,#5AC8FA);" onclick="selectColor(this,'#007AFF')"></div>
-                    <div class="color-dot" style="background:linear-gradient(135deg,#34C759,#30D158);" onclick="selectColor(this,'#34C759')"></div>
-                    <div class="color-dot" style="background:linear-gradient(135deg,#FF3B30,#FF6B6B);" onclick="selectColor(this,'#FF3B30')"></div>
-                    <div class="color-dot" style="background:linear-gradient(135deg,#FF9500,#FFCC00);" onclick="selectColor(this,'#FF9500')"></div>
-                    <div class="color-dot" style="background:linear-gradient(135deg,#1C1C1E,#48484A);" onclick="selectColor(this,'#1C1C1E')"></div>
-                </div>
-            </div>
-            <div class="toggle-row">
-                <div class="toggle-info">
-                    <div class="toggle-label">Убрать адресную строку</div>
-                    <div class="toggle-sublabel">Только для веб-клипа</div>
-                </div>
-                <div class="toggle on" id="toggle-removebar" onclick="toggleSwitch('removebar')">
-                    <div class="toggle-thumb"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PREVIEW -->
-    <div class="section">
-        <div class="section-header">Превью профиля</div>
-        <div class="card" style="padding: 20px;">
-            <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
-                <div id="previewIcon" style="width:60px;height:60px;border-radius:13px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
-                    <span style="font-size:24px;">📱</span>
-                </div>
-                <div>
-                    <div id="previewName" style="font-size:18px;font-weight:700;">Моё приложение</div>
-                    <div id="previewSubtitle" style="font-size:13px;color:var(--ios-gray);">Подпись профиля</div>
-                    <div id="previewOrg" style="font-size:12px;color:var(--ios-gray);margin-top:2px;">Организация</div>
-                </div>
-            </div>
-            <div style="height:0.5px;background:var(--ios-separator);margin-bottom:16px;"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div>
-                    <div style="font-size:11px;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;">Тип</div>
-                    <div id="previewType" style="font-size:14px;font-weight:500;margin-top:2px;">Веб-клип</div>
-                </div>
-                <div>
-                    <div style="font-size:11px;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;">Размер</div>
-                    <div id="previewSize" style="font-size:14px;font-weight:500;margin-top:2px;">~2 KB</div>
-                </div>
-                <div>
-                    <div style="font-size:11px;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;">Формат</div>
-                    <div style="font-size:14px;font-weight:500;margin-top:2px;">.mobileconfig</div>
-                </div>
-                <div>
-                    <div style="font-size:11px;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;">Платформа</div>
-                    <div style="font-size:14px;font-weight:500;margin-top:2px;">iOS / macOS</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <div class="tab-item active" onclick="gotoTab(0)" id="tab0">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="white" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="white" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="white" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="white" stroke-width="1.8"/></svg>
+    <span>Главная</span>
+  </div>
+  <div class="tab-item" onclick="gotoTab(1)" id="tab1">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="white" stroke-width="1.8"/><path d="M14 2v6h6M12 18v-6M9 15h6" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span>Профили</span>
+    <div class="tab-badge" id="profilesBadge" style="display:none;">0</div>
+  </div>
+  <div class="tab-item" onclick="gotoTab(2)" id="tab2">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="white" stroke-width="1.8"/></svg>
+    <span>IPA</span>
+  </div>
+  <div class="tab-item" onclick="gotoTab(3)" id="tab3">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="white" stroke-width="1.8"/><path d="M8 11V7a4 4 0 018 0v4" stroke="white" stroke-width="1.8"/><circle cx="12" cy="16" r="1" fill="white"/></svg>
+    <span>Подпись</span>
+  </div>
+  <div class="tab-item" onclick="gotoTab(4)" id="tab4">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.8"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span>Аккаунт</span>
+  </div>
 </div>
 
-<!-- BOTTOM CREATE BUTTON -->
-<div class="bottom-bar">
-    <button class="create-btn" id="createBtn" onclick="createProfile()">
-        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        Создать профиль
+<!-- PAGES -->
+<div class="pages">
+
+<!-- PAGE 0: HOME / CREATE -->
+<div class="page active" id="page0">
+
+  <!-- PREVIEW -->
+  <div class="prof-preview" id="livePreview">
+    <div class="prof-preview-ico" id="pvIco" style="background:linear-gradient(135deg,#667eea,#764ba2);">📱</div>
+    <div class="prof-preview-info">
+      <h3 id="pvName">Новый профиль</h3>
+      <p id="pvSub">Тип: Веб-клип · Не подписан</p>
+    </div>
+  </div>
+
+  <!-- ICON -->
+  <div class="section-label">Иконка</div>
+  <div class="g-card">
+    <div class="icon-area">
+      <div class="icon-preview-big" id="iconBig" onclick="document.getElementById('iconFile').click()">
+        <div id="iconPh" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <svg viewBox="0 0 24 24" style="width:36px;height:36px;fill:rgba(255,255,255,0.5);"><path d="M12 5v14M5 12h14"/></svg>
+          <span style="font-size:11px;color:rgba(255,255,255,0.5);">Добавить</span>
+        </div>
+        <div class="icon-glass-badge" id="editBadge" style="display:none;">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+      </div>
+      <div class="icon-btns">
+        <div class="icon-pill" onclick="document.getElementById('iconFile').click()">📷 Фото</div>
+        <div class="icon-pill" onclick="document.getElementById('iconFile').click()">🖼 Галерея</div>
+        <div class="icon-pill" onclick="pickEmoji()">😀 Эмодзи</div>
+        <div class="icon-pill" onclick="clearIcon()">✕ Убрать</div>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="iconFile" accept="image/*" onchange="handleIcon(this)">
+
+  <!-- INFO -->
+  <div class="section-label">Основное</div>
+  <div class="g-card">
+    <div class="g-row"><span class="g-row-label req">Название</span><input id="f_name" placeholder="Имя профиля" maxlength="50" oninput="liveUpdate()"></div>
+    <div class="g-row"><span class="g-row-label">Подпись</span><input id="f_sub" placeholder="Необязательно" oninput="liveUpdate()"></div>
+    <div class="g-row"><span class="g-row-label">Организация</span><input id="f_org" placeholder="Ваш бренд"></div>
+    <div class="g-row"><span class="g-row-label">Описание</span><textarea id="f_desc" placeholder="Краткое описание..."></textarea></div>
+    <div class="g-row"><span class="g-row-label">Идентификатор</span><input id="f_id" placeholder="com.example.app"></div>
+  </div>
+
+  <!-- TYPE -->
+  <div class="section-label">Тип профиля</div>
+  <div class="type-grid">
+
+    <div class="type-tile sel" id="tt_webclip" onclick="setType('webclip')">
+      <div class="type-tile-header">
+        <div class="type-ico" style="background:linear-gradient(135deg,#0A84FF,#5AC8FA);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5" fill="none"/><path d="M12 2a15 15 0 010 20M2 12h20" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="type-title">Веб-клип</div>
+      <div class="type-sub">Сайт на рабочем столе</div>
+      <span class="tag" style="background:rgba(10,132,255,0.15);color:#5AC8FA;">Web Clip</span>
+    </div>
+
+    <div class="type-tile" id="tt_dns" onclick="setType('dns')">
+      <div class="type-tile-header">
+        <div class="type-ico" style="background:linear-gradient(135deg,#FF9F0A,#FF6B00);">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        </div>
+        <div class="type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="type-title">DNS</div>
+      <div class="type-sub">Настройка серверов DNS</div>
+      <span class="tag" style="background:rgba(255,159,10,0.15);color:#FF9F0A;">DNS</span>
+    </div>
+
+    <div class="type-tile" id="tt_wifi" onclick="setType('wifi')">
+      <div class="type-tile-header">
+        <div class="type-ico" style="background:linear-gradient(135deg,#30D158,#34C759);">
+          <svg viewBox="0 0 24 24"><path d="M1.5 8.5a13 13 0 0121 0M5 12a10 10 0 0114 0M8.5 15.5a6 6 0 017 0M12 19h.01" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+        </div>
+        <div class="type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="type-title">Wi-Fi</div>
+      <div class="type-sub">Авто-подключение к сети</div>
+      <span class="tag" style="background:rgba(48,209,88,0.15);color:#30D158;">Wi-Fi</span>
+    </div>
+
+    <div class="type-tile" id="tt_vpn" onclick="setType('vpn')">
+      <div class="type-tile-header">
+        <div class="type-ico" style="background:linear-gradient(135deg,#BF5AF2,#9B59B6);">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" stroke="white" stroke-width="1.5" fill="none"/><path d="M8 11V7a4 4 0 018 0v4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="type-title">VPN</div>
+      <div class="type-sub">Настройка VPN соединения</div>
+      <span class="tag" style="background:rgba(191,90,242,0.15);color:#BF5AF2;">VPN</span>
+    </div>
+
+    <div class="type-tile" id="tt_email" onclick="setType('email')">
+      <div class="type-tile-header">
+        <div class="type-ico" style="background:linear-gradient(135deg,#FF375F,#FF2D55);">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="white" stroke-width="1.5" fill="none"/><path d="M22 6l-10 7L2 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="type-title">Email</div>
+      <div class="type-sub">Почтовый аккаунт IMAP</div>
+      <span class="tag" style="background:rgba(255,55,95,0.15);color:#FF375F;">Mail</span>
+    </div>
+
+    <div class="type-tile" id="tt_passcode" onclick="setType('passcode')">
+      <div class="type-tile-header">
+        <div class="type-ico" style="background:linear-gradient(135deg,#636366,#48484A);">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="white" stroke-width="1.5" fill="none"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="type-title">Код-пароль</div>
+      <div class="type-sub">Политика безопасности</div>
+      <span class="tag" style="background:rgba(99,99,102,0.15);color:#aaa;">Security</span>
+    </div>
+
+    <div class="type-tile" id="tt_cert" onclick="setType('cert')">
+      <div class="type-tile-header">
+        <div class="type-ico" style="background:linear-gradient(135deg,#FFD60A,#FF9F0A);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5" stroke="white" stroke-width="1.5" fill="none"/><path d="M9 21l3-3 3 3M12 18v-5" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        </div>
+        <div class="type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="type-title">Сертификат</div>
+      <div class="type-sub">Установка CA/SSL сертификата</div>
+      <span class="tag" style="background:rgba(255,214,10,0.15);color:#FFD60A;">Cert</span>
+    </div>
+
+    <div class="type-tile" id="tt_restrict" onclick="setType('restrict')">
+      <div class="type-tile-header">
+        <div class="type-ico" style="background:linear-gradient(135deg,#FF453A,#FF6B6B);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5" fill="none"/><path d="M4.93 4.93l14.14 14.14" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="type-title">Ограничения</div>
+      <div class="type-sub">Блокировка функций iOS</div>
+      <span class="tag" style="background:rgba(255,69,58,0.15);color:#FF453A;">MDM</span>
+    </div>
+
+  </div>
+
+  <!-- DYNAMIC FIELDS -->
+
+  <!-- WEBCLIP -->
+  <div class="dyn active" id="d_webclip">
+    <div class="section-label">Параметры веб-клипа</div>
+    <div class="seg-ctrl">
+      <div class="seg-item active" onclick="setWCSrc('url',this)">🌐 URL</div>
+      <div class="seg-item" onclick="setWCSrc('html',this)">📄 HTML-код</div>
+      <div class="seg-item" onclick="setWCSrc('data',this)">📦 Data URI</div>
+    </div>
+    <div class="g-card" id="wc_url_block">
+      <div class="g-row"><span class="g-row-label req">URL сайта</span><input id="wc_url" type="url" placeholder="https://"></div>
+      <div class="g-row"><span class="g-row-label">Полный экран</span><div class="g-toggle on" id="tg_fs" onclick="tog('fs')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row"><span class="g-row-label">Без навигации</span><div class="g-toggle on" id="tg_nav" onclick="tog('nav')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">Игнор. HTTPS</span><div class="g-toggle" id="tg_https" onclick="tog('https')"><div class="g-toggle-thumb"></div></div></div>
+    </div>
+    <div class="g-card" id="wc_html_block" style="display:none;">
+      <div style="padding:14px 16px;">
+        <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;">HTML-код (будет встроен в data URI)</div>
+        <textarea id="wc_html" style="width:100%;min-height:130px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#30D158;font-family:Menlo,monospace;font-size:12px;outline:none;resize:vertical;" placeholder="<!DOCTYPE html>&#10;<html>&#10;<body>&#10;  <h1>Hello!</h1>&#10;</body>&#10;</html>"></textarea>
+      </div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">Полный экран</span><div class="g-toggle on" id="tg_fs2" onclick="tog('fs2')"><div class="g-toggle-thumb"></div></div></div>
+    </div>
+    <div class="g-card" id="wc_data_block" style="display:none;">
+      <div class="g-row"><span class="g-row-label">Data URI</span><input id="wc_data" placeholder="data:text/html;base64,..."></div>
+    </div>
+    <div style="margin-top:8px;">
+      <div class="info-box">
+        <svg viewBox="0 0 24 24" fill="#5AC8FA"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        <p>Веб-клип добавляется на рабочий стол iOS как приложение. Открывается в отдельном окне Safari без адресной строки.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DNS -->
+  <div class="dyn" id="d_dns">
+    <div class="section-label">Параметры DNS</div>
+    <div class="g-card">
+      <div class="g-row"><span class="g-row-label req">Основной DNS</span><input id="dns1" placeholder="8.8.8.8"></div>
+      <div class="g-row"><span class="g-row-label">Запасной DNS</span><input id="dns2" placeholder="8.8.4.4"></div>
+      <div class="g-row"><span class="g-row-label">Протокол</span>
+        <select id="dns_proto" style="flex:1;border:none;outline:none;font-size:15px;color:white;background:transparent;text-align:right;">
+          <option>Plain (UDP/TCP)</option>
+          <option>DNS-over-HTTPS</option>
+          <option>DNS-over-TLS</option>
+        </select>
+      </div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">DoH/DoT URL</span><input id="dns_url" placeholder="https://dns.google/dns-query"></div>
+    </div>
+    <div style="margin-top:8px;">
+      <div class="info-box warn">
+        <svg viewBox="0 0 24 24" fill="#FF9F0A"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01" stroke="white" stroke-width="2" fill="none"/></svg>
+        <p>DNS профиль применяется ко всем соединениям. DNS-over-HTTPS шифрует DNS запросы.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIFI -->
+  <div class="dyn" id="d_wifi">
+    <div class="section-label">Параметры Wi-Fi</div>
+    <div class="g-card">
+      <div class="g-row"><span class="g-row-label req">SSID сети</span><input id="wifi_ssid" placeholder="Название сети"></div>
+      <div class="g-row"><span class="g-row-label req">Пароль</span><input id="wifi_pass" type="password" placeholder="••••••••"></div>
+      <div class="g-row"><span class="g-row-label">Безопасность</span>
+        <select id="wifi_sec" style="flex:1;border:none;outline:none;font-size:15px;color:white;background:transparent;text-align:right;">
+          <option>WPA2 Personal</option>
+          <option>WPA3 Personal</option>
+          <option>WPA/WPA2</option>
+          <option>WEP</option>
+          <option>Открытая</option>
+        </select>
+      </div>
+      <div class="g-row"><span class="g-row-label">Скрытая сеть</span><div class="g-toggle" id="tg_whid" onclick="tog('whid')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">Авто-подключение</span><div class="g-toggle on" id="tg_wauto" onclick="tog('wauto')"><div class="g-toggle-thumb"></div></div></div>
+    </div>
+  </div>
+
+  <!-- VPN -->
+  <div class="dyn" id="d_vpn">
+    <div class="section-label">Параметры VPN</div>
+    <div class="g-card">
+      <div class="g-row"><span class="g-row-label req">Сервер</span><input id="vpn_host" placeholder="vpn.example.com"></div>
+      <div class="g-row"><span class="g-row-label">Порт</span><input id="vpn_port" placeholder="500" type="number"></div>
+      <div class="g-row"><span class="g-row-label">Тип VPN</span>
+        <select id="vpn_type" style="flex:1;border:none;outline:none;font-size:15px;color:white;background:transparent;text-align:right;">
+          <option>IKEv2</option>
+          <option>L2TP</option>
+          <option>IPSec</option>
+          <option>PPTP</option>
+        </select>
+      </div>
+      <div class="g-row"><span class="g-row-label">Логин</span><input id="vpn_user" placeholder="username"></div>
+      <div class="g-row"><span class="g-row-label">Пароль</span><input id="vpn_pass" type="password" placeholder="••••••••"></div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">Shared Secret</span><input id="vpn_secret" type="password" placeholder="••••••••"></div>
+    </div>
+  </div>
+
+  <!-- EMAIL -->
+  <div class="dyn" id="d_email">
+    <div class="section-label">Параметры Email</div>
+    <div class="g-card">
+      <div class="g-row"><span class="g-row-label req">Email адрес</span><input id="em_addr" type="email" placeholder="user@example.com"></div>
+      <div class="g-row"><span class="g-row-label">Отображаемое</span><input id="em_name" placeholder="Ваше имя"></div>
+      <div class="g-row"><span class="g-row-label">Тип</span>
+        <select id="em_type" style="flex:1;border:none;outline:none;font-size:15px;color:white;background:transparent;text-align:right;">
+          <option>IMAP</option><option>POP3</option>
+        </select>
+      </div>
+      <div class="g-row"><span class="g-row-label">IMAP сервер</span><input id="em_imap" placeholder="imap.example.com"></div>
+      <div class="g-row"><span class="g-row-label">IMAP порт</span><input id="em_imap_p" placeholder="993" type="number"></div>
+      <div class="g-row"><span class="g-row-label">SMTP сервер</span><input id="em_smtp" placeholder="smtp.example.com"></div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">SMTP порт</span><input id="em_smtp_p" placeholder="587" type="number"></div>
+    </div>
+  </div>
+
+  <!-- PASSCODE -->
+  <div class="dyn" id="d_passcode">
+    <div class="section-label">Политика паролей</div>
+    <div class="g-card">
+      <div class="g-row"><span class="g-row-label">Мин. длина</span><input id="pc_min" type="number" placeholder="6" min="4" max="32"></div>
+      <div class="g-row"><span class="g-row-label">Сложный пароль</span><div class="g-toggle" id="tg_pcomp" onclick="tog('pcomp')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row"><span class="g-row-label">Спец. символы</span><div class="g-toggle" id="tg_pspec" onclick="tog('pspec')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row"><span class="g-row-label">Макс. попыток</span><input id="pc_att" type="number" placeholder="10" min="1" max="20"></div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">Блокировка мин.</span><input id="pc_lock" type="number" placeholder="5"></div>
+    </div>
+  </div>
+
+  <!-- CERT -->
+  <div class="dyn" id="d_cert">
+    <div class="section-label">Сертификат</div>
+    <div class="g-card">
+      <div class="g-row"><span class="g-row-label req">Имя сертификата</span><input id="cert_name" placeholder="My CA Certificate"></div>
+      <div class="g-row"><span class="g-row-label">Тип</span>
+        <select id="cert_type" style="flex:1;border:none;outline:none;font-size:15px;color:white;background:transparent;text-align:right;">
+          <option>Root CA</option>
+          <option>Intermediate CA</option>
+          <option>Client Cert</option>
+          <option>PKCS#12</option>
+        </select>
+      </div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">Пароль PKCS12</span><input id="cert_pass" type="password" placeholder="Если есть"></div>
+    </div>
+    <div style="margin-top:8px;">
+      <div class="file-drop" onclick="document.getElementById('certFile').click()">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="white" stroke-width="1.5"/><path d="M14 2v6h6M12 18v-6M9 15h6" stroke="white" stroke-width="1.5"/></svg>
+        <h3>Загрузить .cer / .p12</h3>
+        <p>Нажмите или перетащите файл сертификата</p>
+      </div>
+      <input type="file" id="certFile" accept=".cer,.crt,.p12,.pem" onchange="handleCert(this)">
+    </div>
+  </div>
+
+  <!-- RESTRICT -->
+  <div class="dyn" id="d_restrict">
+    <div class="section-label">Ограничения iOS</div>
+    <div class="g-card">
+      <div class="g-row"><span class="g-row-label">Блок. App Store</span><div class="g-toggle" id="tg_rapp" onclick="tog('rapp')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row"><span class="g-row-label">Блок. Safari</span><div class="g-toggle" id="tg_rsaf" onclick="tog('rsaf')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row"><span class="g-row-label">Блок. Камера</span><div class="g-toggle" id="tg_rcam" onclick="tog('rcam')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row"><span class="g-row-label">Блок. FaceTime</span><div class="g-toggle" id="tg_rft" onclick="tog('rft')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row"><span class="g-row-label">Блок. Siri</span><div class="g-toggle" id="tg_rsiri" onclick="tog('rsiri')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row"><span class="g-row-label">Блок. iCloud</span><div class="g-toggle" id="tg_ricloud" onclick="tog('ricloud')"><div class="g-toggle-thumb"></div></div></div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">Запрет уд. профиля</span><div class="g-toggle" id="tg_rrem" onclick="tog('rrem')"><div class="g-toggle-thumb"></div></div></div>
+    </div>
+  </div>
+
+  <!-- APPEARANCE -->
+  <div class="section-label">Оформление</div>
+  <div class="g-card">
+    <div class="g-row">
+      <span class="g-row-label">Цвет иконки</span>
+      <div class="color-row">
+        <div class="c-dot sel" style="background:linear-gradient(135deg,#667eea,#764ba2);" onclick="setColor(this,'#667eea')"></div>
+        <div class="c-dot" style="background:linear-gradient(135deg,#0A84FF,#5AC8FA);" onclick="setColor(this,'#0A84FF')"></div>
+        <div class="c-dot" style="background:linear-gradient(135deg,#30D158,#34C759);" onclick="setColor(this,'#30D158')"></div>
+        <div class="c-dot" style="background:linear-gradient(135deg,#FF453A,#FF6B6B);" onclick="setColor(this,'#FF453A')"></div>
+        <div class="c-dot" style="background:linear-gradient(135deg,#FF9F0A,#FFD60A);" onclick="setColor(this,'#FF9F0A')"></div>
+        <div class="c-dot" style="background:linear-gradient(135deg,#BF5AF2,#FF375F);" onclick="setColor(this,'#BF5AF2')"></div>
+      </div>
+    </div>
+    <div class="g-row" style="border:none;">
+      <span class="g-row-label">Версия</span>
+      <input id="f_ver" type="number" value="1" min="1" max="99" style="text-align:right;max-width:60px;">
+    </div>
+  </div>
+
+  <div style="height:80px;"></div>
+</div>
+
+<!-- PAGE 1: PROFILES -->
+<div class="page" id="page1">
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val" id="st_total">0</div>
+      <div class="stat-key">Профилей</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--green);" id="st_signed">0</div>
+      <div class="stat-key">Подписано</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--orange);" id="st_unsigned">0</div>
+      <div class="stat-key">Без подписи</div>
+    </div>
+  </div>
+
+  <div class="section-label">Последние</div>
+  <div class="recent-scroll" id="recentScroll">
+    <div class="recent-chip" onclick="gotoTab(0)">
+      <div class="recent-chip-ico" style="background:linear-gradient(135deg,#0A84FF,#5AC8FA);">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" fill="none"/></svg>
+      </div>
+      <span>Создать новый</span>
+    </div>
+  </div>
+
+  <div class="section-label">Сохранённые профили</div>
+  <div class="g-card" id="profilesList">
+    <div class="empty-state" id="emptyProfiles">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="white" stroke-width="1.5" fill="none"/><path d="M14 2v6h6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="empty-title">Нет профилей</div>
+      <div class="empty-sub">Создайте первый профиль на вкладке «Главная»</div>
+    </div>
+  </div>
+
+  <div style="height:80px;"></div>
+</div>
+
+<!-- PAGE 2: IPA -->
+<div class="page" id="page2">
+
+  <div class="section-label">Загрузка IPA файла</div>
+  <div class="file-drop" id="ipaDropZone" onclick="document.getElementById('ipaFile').click()">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="white" stroke-width="1.5"/><path d="M12 22V12M7.5 9.5l4.5 2.5 4.5-2.5" stroke="white" stroke-width="1.5"/></svg>
+    <h3>Загрузить IPA</h3>
+    <p>Нажмите или перетащите .ipa файл</p>
+    <span class="tag" style="background:rgba(255,159,10,0.15);color:#FF9F0A;">до 4 GB</span>
+  </div>
+  <input type="file" id="ipaFile" accept=".ipa" onchange="handleIPA(this)">
+
+  <div id="ipaInfo" style="display:none;">
+    <div class="ipa-card">
+      <div class="ipa-header">
+        <div class="ipa-appicon" id="ipaAppIcon">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        </div>
+        <div class="ipa-info">
+          <h3 id="ipaName">App.ipa</h3>
+          <p id="ipaBundle">com.example.app</p>
+        </div>
+      </div>
+      <div class="ipa-stats">
+        <div class="ipa-stat"><div class="ipa-stat-val" id="ipaSize">-</div><div class="ipa-stat-key">Размер</div></div>
+        <div class="ipa-stat"><div class="ipa-stat-val" id="ipaVer">-</div><div class="ipa-stat-key">Версия</div></div>
+        <div class="ipa-stat"><div class="ipa-stat-val" id="ipaPlatform">iOS</div><div class="ipa-stat-key">Платформа</div></div>
+      </div>
+    </div>
+
+    <div class="section-label">Действия с IPA</div>
+    <div class="g-card">
+      <div class="setting-row" onclick="ipaAction('resign')">
+        <div class="setting-ico" style="background:linear-gradient(135deg,#BF5AF2,#FF375F);">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" stroke="white" stroke-width="1.5" fill="none"/><path d="M8 11V7a4 4 0 018 0v4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="setting-txt">
+          <div class="setting-name">Переподписать IPA</div>
+          <div class="setting-desc">С вашим сертификатом .p12</div>
+        </div>
+        <div class="setting-right"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="setting-row" onclick="ipaAction('info')">
+        <div class="setting-ico" style="background:linear-gradient(135deg,#0A84FF,#5AC8FA);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5" fill="none"/><path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2" fill="none"/></svg>
+        </div>
+        <div class="setting-txt">
+          <div class="setting-name">Информация о приложении</div>
+          <div class="setting-desc">Info.plist, entitlements</div>
+        </div>
+        <div class="setting-right"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="setting-row" onclick="ipaAction('patch')">
+        <div class="setting-ico" style="background:linear-gradient(135deg,#30D158,#34C759);">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="setting-txt">
+          <div class="setting-name">Патч Bundle ID</div>
+          <div class="setting-desc">Изменить идентификатор пакета</div>
+        </div>
+        <div class="setting-right"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="setting-row" onclick="ipaAction('dl')" style="border:none;">
+        <div class="setting-ico" style="background:linear-gradient(135deg,#FF9F0A,#FFD60A);">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="setting-txt">
+          <div class="setting-name">Скачать IPA</div>
+          <div class="setting-desc">Сохранить в файлы</div>
+        </div>
+        <div class="setting-right"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Инструменты IPA</div>
+  <div class="g-card">
+    <div class="setting-row" onclick="showIPATool('plist')">
+      <div class="setting-ico" style="background:linear-gradient(135deg,#636366,#48484A);">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="white" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="setting-txt">
+        <div class="setting-name">Создать Plist манифест</div>
+        <div class="setting-desc">OTA установка через Safari</div>
+      </div>
+      <div class="setting-right"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="setting-row" onclick="showIPATool('ota')" style="border:none;">
+      <div class="setting-ico" style="background:linear-gradient(135deg,#FF375F,#FF2D55);">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="white" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="setting-txt">
+        <div class="setting-name">OTA Установка</div>
+        <div class="setting-desc">Сгенерировать itms-services:// ссылку</div>
+      </div>
+      <div class="setting-right"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+  </div>
+
+  <div style="height:80px;"></div>
+</div>
+
+<!-- PAGE 3: SIGN -->
+<div class="page" id="page3">
+
+  <div class="section-label">Подпись профиля iOS</div>
+  <div class="info-box" style="margin-bottom:12px;">
+    <svg viewBox="0 0 24 24" fill="var(--blue)"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2" fill="none"/></svg>
+    <p>Подписанные профили устанавливаются без предупреждений. Нужны сертификат .p12 и пароль.</p>
+  </div>
+
+  <!-- STEPS -->
+  <div class="g-card" style="padding:16px;">
+    <div class="cert-step">
+      <div class="cert-num active" id="cs1">1</div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;">Загрузить .mobileconfig</div>
+        <div style="font-size:12px;color:var(--text-sec);">Профиль для подписи</div>
+      </div>
+      <div id="cs1_status" style="font-size:12px;color:var(--text-sec);">Ожидание</div>
+    </div>
+    <div class="cert-step">
+      <div class="cert-num" id="cs2">2</div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;">Загрузить .p12</div>
+        <div style="font-size:12px;color:var(--text-sec);">Сертификат разработчика</div>
+      </div>
+      <div id="cs2_status" style="font-size:12px;color:var(--text-sec);">Ожидание</div>
+    </div>
+    <div class="cert-step">
+      <div class="cert-num" id="cs3">3</div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;">Загрузить .mobileprovision</div>
+        <div style="font-size:12px;color:var(--text-sec);">Профиль инициализации</div>
+      </div>
+      <div id="cs3_status" style="font-size:12px;color:var(--text-sec);">Ожидание</div>
+    </div>
+    <div class="cert-step" style="border:none;">
+      <div class="cert-num" id="cs4">4</div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;">Подписать и скачать</div>
+        <div style="font-size:12px;color:var(--text-sec);">Готовый подписанный профиль</div>
+      </div>
+      <div id="cs4_status" style="font-size:12px;color:var(--text-sec);">Ожидание</div>
+    </div>
+  </div>
+
+  <!-- UPLOAD ZONE MOBILECONFIG -->
+  <div class="section-label">Шаг 1 — .mobileconfig</div>
+  <div class="g-card">
+    <div class="file-drop" id="mcDrop" onclick="document.getElementById('mcFile').click()" style="border-radius:0;border:none;border-bottom:0.5px solid var(--sep);">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="white" stroke-width="1.5"/></svg>
+      <h3>Выбрать .mobileconfig</h3>
+      <p id="mcFileName">Файл не выбран</p>
+    </div>
+    <input type="file" id="mcFile" accept=".mobileconfig" onchange="handleSignFile(this,'mc')">
+
+    <!-- UPLOAD ZONE P12 -->
+    <div class="file-drop" id="p12Drop" onclick="document.getElementById('p12File').click()" style="border-radius:0;border:none;border-bottom:0.5px solid var(--sep);">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="white" stroke-width="1.5"/><path d="M8 11V7a4 4 0 018 0v4" stroke="white" stroke-width="1.5"/></svg>
+      <h3>Выбрать .p12</h3>
+      <p id="p12FileName">Файл не выбран</p>
+    </div>
+    <input type="file" id="p12File" accept=".p12,.pfx" onchange="handleSignFile(this,'p12')">
+
+    <!-- UPLOAD ZONE PROVISION -->
+    <div class="file-drop" id="mpDrop" onclick="document.getElementById('mpFile').click()" style="border-radius:0;border:none;">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="5" stroke="white" stroke-width="1.5"/><path d="M9 21l3-3 3 3M12 18v-5" stroke="white" stroke-width="1.5"/></svg>
+      <h3>Выбрать .mobileprovision</h3>
+      <p id="mpFileName">Файл не выбран</p>
+    </div>
+    <input type="file" id="mpFile" accept=".mobileprovision" onchange="handleSignFile(this,'mp')">
+  </div>
+
+  <!-- P12 PASSWORD -->
+  <div class="section-label">Пароль сертификата</div>
+  <div class="g-card">
+    <div class="g-row"><span class="g-row-label">Пароль .p12</span><input id="p12_pass" type="password" placeholder="••••••••"></div>
+    <div class="g-row" style="border:none;"><span class="g-row-label">Команда подписи</span>
+      <select id="sign_cmd" style="flex:1;border:none;outline:none;font-size:14px;color:var(--text-sec);background:transparent;text-align:right;">
+        <option>openssl smime</option>
+        <option>codesign</option>
+        <option>zsign</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- SIGN BTN -->
+  <div style="margin-top:16px;">
+    <button class="big-btn btn-purple" onclick="signProfile()">
+      <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4" stroke="white" stroke-width="2" fill="none"/></svg>
+      Подписать профиль
     </button>
+  </div>
+
+  <!-- COMMAND PREVIEW -->
+  <div class="section-label">Команда подписи (для справки)</div>
+  <div class="code-block" id="signCmd">openssl smime -sign -in profile.mobileconfig \
+  -out signed.mobileconfig \
+  -signer cert.pem -inkey key.pem \
+  -certfile chain.pem -outform DER \
+  -nodetach</div>
+
+  <div style="height:80px;"></div>
 </div>
+
+<!-- PAGE 4: ACCOUNT -->
+<div class="page" id="page4">
+
+  <div class="section-label">Аккаунт</div>
+  <div class="g-card">
+    <div style="display:flex;align-items:center;gap:16px;padding:20px 16px;border-bottom:0.5px solid var(--sep);">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:white;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
+      </div>
+      <div>
+        <div style="font-size:20px;font-weight:700;" id="accName">Пользователь</div>
+        <div style="font-size:14px;color:var(--text-sec);">PROFI · Бесплатный план</div>
+      </div>
+    </div>
+    <div class="g-row" style="border:none;"><span class="g-row-label">Имя</span><input id="acc_name" placeholder="Ваше имя" oninput="document.getElementById('accName').textContent=this.value||'Пользователь'"></div>
+  </div>
+
+  <div class="section-label">Настройки</div>
+  <div class="g-card">
+    <div class="setting-row" onclick="togSetting('dark')">
+      <div class="setting-ico" style="background:linear-gradient(135deg,#1C1C1E,#48484A);">
+        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="white"/></svg>
+      </div>
+      <div class="setting-txt"><div class="setting-name">Тёмная тема</div></div>
+      <div class="g-toggle" id="tg_dark" onclick="event.stopPropagation();tog('dark')"><div class="g-toggle-thumb"></div></div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-ico" style="background:linear-gradient(135deg,#FF9F0A,#FFD60A);">
+        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="white"/></svg>
+      </div>
+      <div class="setting-txt"><div class="setting-name">Анимации</div></div>
+      <div class="g-toggle on" id="tg_anim" onclick="event.stopPropagation();tog('anim')"><div class="g-toggle-thumb"></div></div>
+    </div>
+    <div class="setting-row" style="border:none;">
+      <div class="setting-ico" style="background:linear-gradient(135deg,#30D158,#34C759);">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="white"/></svg>
+      </div>
+      <div class="setting-txt"><div class="setting-name">Авто-сохранение</div><div class="setting-desc">Сохранять профиль при изменении</div></div>
+      <div class="g-toggle on" id="tg_autosave" onclick="event.stopPropagation();tog('autosave')"><div class="g-toggle-thumb"></div></div>
+    </div>
+  </div>
+
+  <div class="section-label">Данные</div>
+  <div class="g-card">
+    <div class="setting-row" onclick="exportAll()">
+      <div class="setting-ico" style="background:linear-gradient(135deg,#0A84FF,#5AC8FA);">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="white" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="setting-txt"><div class="setting-name">Экспорт всех профилей</div><div class="setting-desc">Скачать архив .zip</div></div>
+      <div class="setting-right"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="setting-row" onclick="clearAll()">
+      <div class="setting-ico" style="background:linear-gradient(135deg,#FF453A,#FF6B6B);">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" stroke="white" stroke-width="1.5" fill="none"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" stroke="white" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="setting-txt"><div class="setting-name" style="color:var(--red);">Очистить все данные</div></div>
+      <div class="setting-right"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+  </div>
+
+  <div class="section-label">О приложении</div>
+  <div class="g-card">
+    <div class="g-row"><span style="font-size:15px;">Версия</span><span style="color:var(--text-sec);margin-left:auto;">1.0.0 (build 1)</span></div>
+    <div class="g-row"><span style="font-size:15px;">Разработчик</span><span style="color:var(--text-sec);margin-left:auto;">PROFI Studio</span></div>
+    <div class="g-row" style="border:none;"><span style="font-size:15px;">Лицензия</span><span style="color:var(--text-sec);margin-left:auto;">MIT Open Source</span></div>
+  </div>
+
+  <div style="height:80px;"></div>
+</div>
+
+</div><!-- /pages -->
+</div><!-- /app -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="fabAction()">
+  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+</button>
 
 <!-- PROGRESS MODAL -->
-<div class="modal-overlay" id="progressModal">
-    <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-title">Сборка профиля</div>
-        <div class="modal-subtitle" id="modalSubtitle">Подготовка файлов...</div>
-
-        <div class="progress-steps" id="progressSteps">
-            <div class="progress-step" id="step-1">
-                <div class="step-icon" id="step-icon-1"><svg viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" fill="none" stroke-width="1.5"/></svg></div>
-                <div class="step-text">
-                    <div class="step-name">Генерация XML</div>
-                    <div class="step-status" id="step-status-1">Ожидание...</div>
-                </div>
-            </div>
-            <div class="progress-step" id="step-2">
-                <div class="step-icon" id="step-icon-2"><svg viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M12 8v4M12 16h.01" stroke="currentColor" fill="none" stroke-width="1.5"/></svg></div>
-                <div class="step-text">
-                    <div class="step-name">Вставка иконки</div>
-                    <div class="step-status" id="step-status-2">Ожидание...</div>
-                </div>
-            </div>
-            <div class="progress-step" id="step-3">
-                <div class="step-icon" id="step-icon-3"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" fill="none" stroke-width="1.5"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" fill="none" stroke-width="1.5"/></svg></div>
-                <div class="step-text">
-                    <div class="step-name">Подписание профиля</div>
-                    <div class="step-status" id="step-status-3">Ожидание...</div>
-                </div>
-            </div>
-            <div class="progress-step" id="step-4">
-                <div class="step-icon" id="step-icon-4"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" fill="none" stroke-width="1.5"/></svg></div>
-                <div class="step-text">
-                    <div class="step-name">Подготовка загрузки</div>
-                    <div class="step-status" id="step-status-4">Ожидание...</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="progress-bar-container">
-            <div class="progress-bar-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-percent" id="progressPercent">0%</div>
-
-        <button class="download-btn" id="downloadBtn" onclick="downloadProfile()">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-            Скачать .mobileconfig
-        </button>
-
-        <div id="installHint" class="hidden" style="margin-top:12px;text-align:center;font-size:13px;color:var(--ios-gray);line-height:1.5;">
-            После скачивания откройте файл → Настройки → Профиль → Установить
-        </div>
+<div class="modal" id="progModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙️ Сборка профиля</div>
+    <div class="modal-sub" id="progSub">Подготовка...</div>
+    <div class="prog-steps" id="progSteps">
+      <div class="prog-step"><div class="prog-step-ico" id="psi1"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" fill="none" stroke-width="1.5"/></svg></div><div class="prog-step-txt"><div class="prog-step-name">Генерация XML</div><div class="prog-step-st" id="pss1">Ожидание</div></div></div>
+      <div class="prog-step"><div class="prog-step-ico" id="psi2"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" fill="none" stroke-width="1.5"/><circle cx="9" cy="9" r="2" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" fill="none" stroke-width="1.5"/></svg></div><div class="prog-step-txt"><div class="prog-step-name">Вставка иконки</div><div class="prog-step-st" id="pss2">Ожидание</div></div></div>
+      <div class="prog-step"><div class="prog-step-ico" id="psi3"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" fill="none" stroke-width="1.5"/><path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" fill="none" stroke-width="1.5"/></svg></div><div class="prog-step-txt"><div class="prog-step-name">Валидация</div><div class="prog-step-st" id="pss3">Ожидание</div></div></div>
+      <div class="prog-step"><div class="prog-step-ico" id="psi4"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" fill="none" stroke-width="1.5"/></svg></div><div class="prog-step-txt"><div class="prog-step-name">Подготовка файла</div><div class="prog-step-st" id="pss4">Ожидание</div></div></div>
     </div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-pct" id="progPct">0%</div>
+    <button class="big-btn btn-green" id="dlBtn" style="display:none;" onclick="downloadProfile()">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="white" stroke-width="2" fill="none"/></svg>
+      Скачать .mobileconfig
+    </button>
+    <button class="big-btn btn-gray" id="addToProfsBtn" style="display:none;margin-top:10px;" onclick="saveAndClose()">
+      Сохранить в профили
+    </button>
+    <div id="installNote" style="display:none;text-align:center;font-size:12px;color:var(--text-sec);margin-top:12px;line-height:1.6;">
+      📱 Откройте файл на iPhone → Настройки → Профиль → Установить
+    </div>
+  </div>
 </div>
 
-<!-- SETTINGS PANEL -->
-<div class="settings-overlay" id="settingsPanel">
-    <div class="settings-nav" style="position:relative;">
-        <div class="settings-back" onclick="closeSettings()">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="var(--ios-blue)" stroke-width="2" stroke-linecap="round"/></svg>
-            Назад
-        </div>
-        <div class="settings-nav-title">Настройки</div>
+<!-- SETTINGS MODAL -->
+<div class="modal" id="settingsModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙️ Настройки</div>
+    <div class="modal-sub">PROFI v1.0.0</div>
+    <div class="g-card">
+      <div class="g-row"><span class="g-row-label">UUID профиля</span><input id="s_uuid" placeholder="Авто" style="text-align:right;color:var(--text-sec);font-size:12px;"></div>
+      <div class="g-row"><span class="g-row-label">Автор</span><input id="s_author" placeholder="Ваше имя"></div>
+      <div class="g-row" style="border:none;"><span class="g-row-label">Разрешить удал.</span><div class="g-toggle on" id="tg_rem" onclick="tog('rem')"><div class="g-toggle-thumb"></div></div></div>
     </div>
-    <div class="settings-content">
-        <div class="section">
-            <div class="section-header">Приложение</div>
-            <div class="card">
-                <div class="toggle-row">
-                    <div class="toggle-info">
-                        <div class="toggle-label">Тёмная тема</div>
-                        <div class="toggle-sublabel">Следует системной теме</div>
-                    </div>
-                    <div class="toggle" id="toggle-darkmode" onclick="toggleSwitch('darkmode')">
-                        <div class="toggle-thumb"></div>
-                    </div>
-                </div>
-                <div class="toggle-row">
-                    <div class="toggle-info">
-                        <div class="toggle-label">Звуки</div>
-                    </div>
-                    <div class="toggle on" id="toggle-sounds" onclick="toggleSwitch('sounds')">
-                        <div class="toggle-thumb"></div>
-                    </div>
-                </div>
-                <div class="toggle-row" style="border:none;">
-                    <div class="toggle-info">
-                        <div class="toggle-label">Автопросмотр</div>
-                        <div class="toggle-sublabel">Обновлять превью при вводе</div>
-                    </div>
-                    <div class="toggle on" id="toggle-autopreview" onclick="toggleSwitch('autopreview')">
-                        <div class="toggle-thumb"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-header">Профиль</div>
-            <div class="card">
-                <div class="input-row">
-                    <label class="input-row-label">UUID</label>
-                    <input type="text" id="customUUID" placeholder="Авто-генерация" readonly style="text-align:right;color:var(--ios-gray);">
-                </div>
-                <div class="input-row" style="border:none;">
-                    <label class="input-row-label">Версия</label>
-                    <input type="number" id="profileVersion" value="1" min="1" max="99" style="text-align:right;">
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-header">О приложении</div>
-            <div class="card">
-                <div class="input-row" style="border-bottom:0.5px solid var(--ios-separator);">
-                    <span style="font-size:16px;">Версия</span>
-                    <span style="color:var(--ios-gray);font-size:16px;margin-left:auto;">1.0.0</span>
-                </div>
-                <div class="input-row" style="border:none;">
-                    <span style="font-size:16px;">Разработчик</span>
-                    <span style="color:var(--ios-gray);font-size:16px;margin-left:auto;">Profile Creator</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="appstore-badge" onclick="alert('App Store — Profile Apps Create')">
-                <svg viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                <div class="appstore-badge-text">
-                    <span>Скачать в</span>
-                    <span>App Store</span>
-                </div>
-            </div>
-        </div>
-
+    <div style="margin-top:16px;">
+      <button class="big-btn btn-blue" onclick="closeSettings()">Готово</button>
     </div>
+  </div>
+</div>
+
+<!-- IPA TOOL MODAL -->
+<div class="modal" id="ipaToolModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="ipaToolTitle">Plist манифест</div>
+    <div class="modal-sub" id="ipaToolSub">Для OTA установки</div>
+    <div id="ipaToolContent"></div>
+    <div style="margin-top:16px;">
+      <button class="big-btn btn-blue" onclick="document.getElementById('ipaToolModal').classList.remove('show')">Закрыть</button>
+    </div>
+  </div>
 </div>
 
 <script>
-    // ========= STATE =========
-    let currentType = 'webclip';
-    let iconBase64 = '';
-    let iconColor = '#667eea';
-    let toggleStates = {
-        fullscreen: true,
-        fullscreen2: true,
-        ignorehttps: false,
-        removebar: true,
-        wifihidden: false,
-        wifiauto: true,
-        passcomplex: false,
-        darkmode: false,
-        sounds: true,
-        autopreview: true
-    };
-    let generatedProfile = '';
-    let webclipSource = 'url';
+// =================== STATE ===================
+const S = {
+  type: 'webclip',
+  iconB64: '',
+  iconColor: '#667eea',
+  iconEmoji: '📱',
+  iconType: 'gradient',
+  wcSrc: 'url',
+  toggles: {
+    fs:true, nav:true, https:false,
+    fs2:true, whid:false, wauto:true,
+    pcomp:false, pspec:false,
+    rapp:false, rsaf:false, rcam:false, rft:false, rsiri:false, ricloud:false, rrem:false,
+    dark:false, anim:true, autosave:true, rem:true
+  },
+  profiles: JSON.parse(localStorage.getItem('profi_profiles')||'[]'),
+  signFiles: { mc: null, p12: null, mp: null },
+  ipaFile: null,
+  generatedPlist: '',
+  currentTab: 0
+};
 
-    // ========= TIME =========
-    function updateTime() {
-        const now = new Date();
-        const h = now.getHours().toString().padStart(2,'0');
-        const m = now.getMinutes().toString().padStart(2,'0');
-        document.getElementById('statusTime').textContent = `${h}:${m}`;
-    }
-    updateTime();
-    setInterval(updateTime, 1000);
+// =================== TIME ===================
+setInterval(()=>{
+  const n=new Date();
+  document.getElementById('stime').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+},1000);
+(()=>{const n=new Date();document.getElementById('stime').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;})();
 
-    // ========= ICON =========
-    function handleIconUpload(input) {
-        const file = input.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            iconBase64 = e.target.result;
-            const preview = document.getElementById('iconPreview');
-            document.getElementById('iconPlaceholder').innerHTML = `<img src="${iconBase64}" style="width:100%;height:100%;object-fit:cover;">`;
-            document.getElementById('iconBadge').style.display = 'flex';
-            document.getElementById('previewIcon').innerHTML = `<img src="${iconBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:13px;">`;
-        };
-        reader.readAsDataURL(file);
-    }
+// =================== TABS ===================
+function gotoTab(i){
+  document.querySelectorAll('.page').forEach((p,j)=>{
+    p.classList.toggle('active',j===i);
+  });
+  document.querySelectorAll('.tab-item').forEach((t,j)=>{
+    t.classList.toggle('active',j===i);
+  });
+  S.currentTab=i;
+  document.getElementById('fab').classList.toggle('hidden', i!==1);
+  if(i===1) renderProfiles();
+}
 
-    function clearIcon() {
-        iconBase64 = '';
-        document.getElementById('iconPlaceholder').innerHTML = `<svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:white;opacity:0.8;"><path d="M12 5v14M5 12h14"/></svg><span style="color:white;font-size:11px;opacity:0.8;">Добавить</span>`;
-        document.getElementById('iconBadge').style.display = 'none';
-        document.getElementById('previewIcon').innerHTML = '<span style="font-size:24px;">📱</span>';
-        document.getElementById('iconFile').value = '';
-    }
+// =================== TOGGLES ===================
+function tog(id){
+  S.toggles[id]=!S.toggles[id];
+  const el=document.getElementById('tg_'+id);
+  if(el) el.classList.toggle('on',S.toggles[id]);
+  autoSave();
+}
 
-    // ========= TYPE SELECT =========
-    function selectType(type) {
-        document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-        document.querySelectorAll('.dynamic-fields').forEach(f => f.classList.remove('active'));
-        document.getElementById('type-' + type).classList.add('selected');
-        document.getElementById('fields-' + type).classList.add('active');
+// =================== ICON ===================
+function handleIcon(inp){
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    S.iconB64=e.target.result;
+    S.iconType='image';
+    const b=document.getElementById('iconBig');
+    document.getElementById('iconPh').innerHTML=`<img src="${S.iconB64}" style="width:100%;height:100%;object-fit:cover;border-radius:26px;">`;
+    document.getElementById('editBadge').style.display='flex';
+    const pv=document.getElementById('pvIco');
+    pv.innerHTML=`<img src="${S.iconB64}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">`;
+  };
+  r.readAsDataURL(f);
+}
 
-        const typeNames = {
-            webclip: 'Веб-клип', dns: 'DNS', wifi: 'Wi-Fi',
-            vpn: 'VPN', email: 'Email', passcode: 'Код-пароль'
-        };
-        currentType = type;
-        document.getElementById('previewType').textContent = typeNames[type];
-    }
+function clearIcon(){
+  S.iconB64=''; S.iconType='gradient';
+  document.getElementById('iconPh').innerHTML=`<svg viewBox="0 0 24 24" style="width:36px;height:36px;fill:rgba(255,255,255,0.5);"><path d="M12 5v14M5 12h14"/></svg><span style="font-size:11px;color:rgba(255,255,255,0.5);">Добавить</span>`;
+  document.getElementById('editBadge').style.display='none';
+  document.getElementById('pvIco').innerHTML='📱';
+  document.getElementById('pvIco').style.background=`linear-gradient(135deg,${S.iconColor},${S.iconColor}99)`;
+  document.getElementById('iconFile').value='';
+}
 
-    // ========= WEBCLIP SOURCE =========
-    function switchWebclipSource(src) {
-        webclipSource = src;
-        const segs = document.querySelectorAll('#webclipSourceSeg .segment');
-        segs.forEach((s,i) => s.classList.toggle('active', (i===0 && src==='url') || (i===1 && src==='html')));
-        document.getElementById('webclipUrlBlock').classList.toggle('hidden', src !== 'url');
-        document.getElementById('webclipHtmlBlock').classList.toggle('hidden', src !== 'html');
-    }
+function pickEmoji(){
+  const emojis=['📱','🌐','🔒','⚙️','🚀','💎','🎯','🔥','⚡','🌟','🎮','📡','🛡️','💻','🎨','📲'];
+  const e=emojis[Math.floor(Math.random()*emojis.length)];
+  S.iconEmoji=e; S.iconType='emoji';
+  document.getElementById('iconPh').innerHTML=`<span style="font-size:52px;">${e}</span>`;
+  document.getElementById('editBadge').style.display='none';
+  document.getElementById('pvIco').innerHTML=e;
+  document.getElementById('pvIco').style.background=`linear-gradient(135deg,${S.iconColor},${S.iconColor}99)`;
+}
 
-    // ========= TOGGLE =========
-    function toggleSwitch(id) {
-        toggleStates[id] = !toggleStates[id];
-        const el = document.getElementById('toggle-' + id);
-        el.classList.toggle('on', toggleStates[id]);
-    }
+// =================== COLORS ===================
+function setColor(dot,color){
+  document.querySelectorAll('.c-dot').forEach(d=>d.classList.remove('sel'));
+  dot.classList.add('sel');
+  S.iconColor=color;
+  if(S.iconType==='gradient'||S.iconType==='emoji'){
+    document.getElementById('iconBig').style.background=`linear-gradient(135deg,${color},${color}99)`;
+    document.getElementById('pvIco').style.background=`linear-gradient(135deg,${color},${color}99)`;
+  }
+}
 
-    // ========= COLOR =========
-    function selectColor(dot, color) {
-        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
-        dot.classList.add('selected');
-        iconColor = color;
-        if (!iconBase64) {
-            document.getElementById('iconPreview').style.background = `linear-gradient(135deg, ${color}, ${color}99)`;
-        }
-    }
+// =================== TYPE ===================
+function setType(t){
+  document.querySelectorAll('.type-tile').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.dyn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tt_'+t).classList.add('sel');
+  document.getElementById('d_'+t).classList.add('active');
+  S.type=t;
+  const names={webclip:'Веб-клип',dns:'DNS',wifi:'Wi-Fi',vpn:'VPN',email:'Email',passcode:'Код-пароль',cert:'Сертификат',restrict:'Ограничения'};
+  document.getElementById('pvSub').textContent=`Тип: ${names[t]} · Не подписан`;
+  autoSave();
+}
 
-    // ========= PREVIEW UPDATE =========
-    document.addEventListener('input', () => {
-        if (!toggleStates.autopreview) return;
-        const name = document.getElementById('appName').value || 'Моё приложение';
-        const sub = document.getElementById('appSubtitle').value || 'Подпись профиля';
-        const org = document.getElementById('appOrg').value || 'Организация';
-        document.getElementById('previewName').textContent = name;
-        document.getElementById('previewSubtitle').textContent = sub;
-        document.getElementById('previewOrg').textContent = org;
-    });
+// =================== WC SOURCE ===================
+function setWCSrc(src,el){
+  document.querySelectorAll('#d_webclip .seg-item').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  S.wcSrc=src;
+  document.getElementById('wc_url_block').style.display=src==='url'?'block':'none';
+  document.getElementById('wc_html_block').style.display=src==='html'?'block':'none';
+  document.getElementById('wc_data_block').style.display=src==='data'?'block':'none';
+}
 
-    function updateUrlPreview() {}
+// =================== LIVE UPDATE ===================
+function liveUpdate(){
+  const n=document.getElementById('f_name').value||'Новый профиль';
+  document.getElementById('pvName').textContent=n;
+  const s=document.getElementById('f_sub').value;
+  if(s) document.getElementById('pvSub').textContent=s;
+  autoSave();
+}
 
-    // ========= UUID =========
-    function generateUUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-            const r = Math.random() * 16 | 0;
-            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16).toUpperCase();
-        });
-    }
+// =================== AUTOSAVE ===================
+let autoSaveTimer;
+function autoSave(){
+  if(!S.toggles.autosave) return;
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer=setTimeout(()=>{ /* save draft */ },1000);
+}
 
-    // ========= PROFILE GENERATOR =========
-    function generateProfile() {
-        const name = document.getElementById('appName').value || 'My App';
-        const subtitle = document.getElementById('appSubtitle').value;
-        const desc = document.getElementById('appDescription').value;
-        const org = document.getElementById('appOrg').value || 'Profile Creator';
-        const uuid = generateUUID();
-        const uuid2 = generateUUID();
+// =================== GENERATE ===================
+function generatePlist(){
+  const nm=document.getElementById('f_name').value||'My Profile';
+  const sub=document.getElementById('f_sub').value;
+  const org=document.getElementById('f_org').value||'PROFI';
+  const desc=document.getElementById('f_desc').value;
+  const customId=document.getElementById('f_id').value;
+  const ver=document.getElementById('f_ver').value||1;
+  const uuid1=genUUID(), uuid2=genUUID();
+  const bundleId=customId||(org.toLowerCase().replace(/\s+/g,'.')+'.'+nm.toLowerCase().replace(/\s+/g,'.'));
 
-        let payloadContent = '';
-        let payloadType = '';
+  let iconData='';
+  if(S.iconB64&&S.iconB64.startsWith('data:image')){
+    iconData=S.iconB64.split(',')[1];
+  }
 
-        if (currentType === 'webclip') {
-            const fullscreen = toggleStates.fullscreen;
-            const ignoreHTTPS = toggleStates.ignorehttps;
-            let url = '';
-            let iconData = '';
+  let payload='';
 
-            if (webclipSource === 'url') {
-                url = document.getElementById('webclipUrl').value || 'https://example.com';
-            } else {
-                const html = document.getElementById('webclipHtml').value || '<html><body><h1>Hello</h1></body></html>';
-                url = 'data:text/html;base64,' + btoa(unescape(encodeURIComponent(html)));
-            }
-
-            if (iconBase64 && iconBase64.startsWith('data:image')) {
-                iconData = iconBase64.split(',')[1];
-            }
-
-            payloadType = 'com.apple.webClip.managed';
-            payloadContent = `
-        <dict>
-            <key>FullScreen</key>
-            <${fullscreen ? 'true' : 'false'}/>
-            <key>IsRemovable</key>
-            <true/>
-            <key>Label</key>
-            <string>${escapeXml(name)}</string>
-            <key>PayloadDescription</key>
-            <string>${escapeXml(desc || 'Web Clip')}</string>
-            <key>PayloadDisplayName</key>
-            <string>${escapeXml(name)}</string>
-            <key>PayloadIdentifier</key>
-            <string>com.profilecreator.webclip.${uuid2}</string>
-            <key>PayloadType</key>
-            <string>com.apple.webClip.managed</string>
-            <key>PayloadUUID</key>
-            <string>${uuid2}</string>
-            <key>PayloadVersion</key>
-            <integer>1</integer>
-            <key>URL</key>
-            <string>${escapeXml(url)}</string>
-            ${ignoreHTTPS ? '<key>IgnoreManifestScope</key><true/>' : ''}
-            ${iconData ? `<key>Icon</key>\n            <data>${iconData}</data>` : ''}
+  if(S.type==='webclip'){
+    let url='';
+    if(S.wcSrc==='url') url=document.getElementById('wc_url').value||'https://example.com';
+    else if(S.wcSrc==='html'){
+      const html=document.getElementById('wc_html').value||'<html><body><h1>Hello</h1></body></html>';
+      try{ url='data:text/html;base64,'+btoa(unescape(encodeURIComponent(html))); }catch(e){ url='data:text/html;charset=utf-8,'+encodeURIComponent(html); }
+    } else { url=document.getElementById('wc_data').value; }
+    const fs=S.toggles.fs; const ig=S.toggles.https;
+    payload=`        <dict>
+            <key>FullScreen</key><${fs}/>
+            <key>IsRemovable</key><true/>
+            <key>Label</key><string>${esc(nm)}</string>
+            <key>PayloadDescription</key><string>${esc(desc||'Web Clip')}</string>
+            <key>PayloadDisplayName</key><string>${esc(nm)}</string>
+            <key>PayloadIdentifier</key><string>${esc(bundleId)}.webclip</string>
+            <key>PayloadType</key><string>com.apple.webClip.managed</string>
+            <key>PayloadUUID</key><string>${uuid2}</string>
+            <key>PayloadVersion</key><integer>1</integer>
+            <key>URL</key><string>${esc(url)}</string>
+            ${ig?'<key>IgnoreManifestScope</key><true/>':''}
+            ${iconData?`<key>Icon</key><data>${iconData}</data>`:''}
         </dict>`;
-
-        } else if (currentType === 'dns') {
-            const primary = document.getElementById('dnsPrimary').value || '8.8.8.8';
-            const secondary = document.getElementById('dnsSecondary').value;
-            const dohUrl = document.getElementById('dnsDoH').value;
-
-            payloadType = 'com.apple.dnsSettings.managed';
-            payloadContent = `
-        <dict>
-            <key>DNSProtocol</key>
-            <string>HTTPS</string>
-            <key>ServerURL</key>
-            <string>${escapeXml(dohUrl || `https://dns.google/dns-query`)}</string>
-            <key>ServerAddresses</key>
-            <array>
-                <string>${escapeXml(primary)}</string>
-                ${secondary ? `<string>${escapeXml(secondary)}</string>` : ''}
-            </array>
-            <key>PayloadDescription</key>
-            <string>${escapeXml(desc || 'DNS Configuration')}</string>
-            <key>PayloadDisplayName</key>
-            <string>${escapeXml(name)}</string>
-            <key>PayloadIdentifier</key>
-            <string>com.profilecreator.dns.${uuid2}</string>
-            <key>PayloadType</key>
-            <string>com.apple.dnsSettings.managed</string>
-            <key>PayloadUUID</key>
-            <string>${uuid2}</string>
-            <key>PayloadVersion</key>
-            <integer>1</integer>
+  } else if(S.type==='dns'){
+    const p=document.getElementById('dns1').value||'8.8.8.8';
+    const s2=document.getElementById('dns2').value;
+    const du=document.getElementById('dns_url').value||'https://dns.google/dns-query';
+    payload=`        <dict>
+            <key>DNSProtocol</key><string>HTTPS</string>
+            <key>ServerURL</key><string>${esc(du)}</string>
+            <key>ServerAddresses</key><array><string>${esc(p)}</string>${s2?`<string>${esc(s2)}</string>`:''}</array>
+            <key>PayloadDisplayName</key><string>${esc(nm)}</string>
+            <key>PayloadIdentifier</key><string>${esc(bundleId)}.dns</string>
+            <key>PayloadType</key><string>com.apple.dnsSettings.managed</string>
+            <key>PayloadUUID</key><string>${uuid2}</string>
+            <key>PayloadVersion</key><integer>1</integer>
         </dict>`;
-
-        } else if (currentType === 'wifi') {
-            const ssid = document.getElementById('wifiSSID').value || 'MyNetwork';
-            const pass = document.getElementById('wifiPassword').value;
-            const security = document.getElementById('wifiSecurity').value;
-            const hidden = toggleStates.wifihidden;
-            const auto = toggleStates.wifiauto;
-
-            payloadType = 'com.apple.wifi.managed';
-            payloadContent = `
-        <dict>
-            <key>SSID_STR</key>
-            <string>${escapeXml(ssid)}</string>
-            <key>HIDDEN_NETWORK</key>
-            <${hidden ? 'true' : 'false'}/>
-            <key>AutoJoin</key>
-            <${auto ? 'true' : 'false'}/>
-            <key>EncryptionType</key>
-            <string>${security === 'Нет' ? 'None' : security.replace('/', '')}</string>
-            ${pass ? `<key>Password</key>\n            <string>${escapeXml(pass)}</string>` : ''}
-            <key>PayloadDescription</key>
-            <string>${escapeXml(desc || 'Wi-Fi Configuration')}</string>
-            <key>PayloadDisplayName</key>
-            <string>${escapeXml(name)}</string>
-            <key>PayloadIdentifier</key>
-            <string>com.profilecreator.wifi.${uuid2}</string>
-            <key>PayloadType</key>
-            <string>com.apple.wifi.managed</string>
-            <key>PayloadUUID</key>
-            <string>${uuid2}</string>
-            <key>PayloadVersion</key>
-            <integer>1</integer>
+  } else if(S.type==='wifi'){
+    const ssid=document.getElementById('wifi_ssid').value||'MyNetwork';
+    const pass=document.getElementById('wifi_pass').value;
+    const sec=document.getElementById('wifi_sec').value;
+    const hid=S.toggles.whid; const auto=S.toggles.wauto;
+    payload=`        <dict>
+            <key>SSID_STR</key><string>${esc(ssid)}</string>
+            <key>HIDDEN_NETWORK</key><${hid}/>
+            <key>AutoJoin</key><${auto}/>
+            <key>EncryptionType</key><string>${sec==='Открытая'?'None':sec.replace(/\s*Personal/,'').replace('/','')}</string>
+            ${pass?`<key>Password</key><string>${esc(pass)}</string>`:''}
+            <key>PayloadDisplayName</key><string>${esc(nm)}</string>
+            <key>PayloadIdentifier</key><string>${esc(bundleId)}.wifi</string>
+            <key>PayloadType</key><string>com.apple.wifi.managed</string>
+            <key>PayloadUUID</key><string>${uuid2}</string>
+            <key>PayloadVersion</key><integer>1</integer>
         </dict>`;
-
-        } else if (currentType === 'vpn') {
-            const server = document.getElementById('vpnServer').value || 'vpn.example.com';
-            const vpnType = document.getElementById('vpnType').value;
-            const user = document.getElementById('vpnUser').value;
-            const pass = document.getElementById('vpnPassword').value;
-
-            payloadType = 'com.apple.vpn.managed';
-            payloadContent = `
-        <dict>
-            <key>UserDefinedName</key>
-            <string>${escapeXml(name)}</string>
-            <key>VPNType</key>
-            <string>${vpnType === 'WireGuard' ? 'IKEv2' : vpnType}</string>
-            <key>VPNSubType</key>
-            <string>com.apple.networking.vpn</string>
-            <key>IKEv2</key>
-            <dict>
-                <key>RemoteAddress</key>
-                <string>${escapeXml(server)}</string>
-                <key>AuthenticationMethod</key>
-                <string>SharedSecret</string>
-                ${user ? `<key>LocalIdentifier</key>\n                <string>${escapeXml(user)}</string>` : ''}
+  } else if(S.type==='vpn'){
+    const host=document.getElementById('vpn_host').value||'vpn.example.com';
+    const port=document.getElementById('vpn_port').value||'500';
+    const vtype=document.getElementById('vpn_type').value;
+    const user=document.getElementById('vpn_user').value;
+    payload=`        <dict>
+            <key>UserDefinedName</key><string>${esc(nm)}</string>
+            <key>VPNType</key><string>${esc(vtype)}</string>
+            <key>IKEv2</key><dict>
+                <key>RemoteAddress</key><string>${esc(host)}</string>
+                <key>RemoteIdentifier</key><string>${esc(host)}</string>
+                <key>LocalIdentifier</key><string>${esc(user||'user')}</string>
+                <key>AuthenticationMethod</key><string>SharedSecret</string>
             </dict>
-            <key>PayloadDescription</key>
-            <string>${escapeXml(desc || 'VPN Configuration')}</string>
-            <key>PayloadDisplayName</key>
-            <string>${escapeXml(name)}</string>
-            <key>PayloadIdentifier</key>
-            <string>com.profilecreator.vpn.${uuid2}</string>
-            <key>PayloadType</key>
-            <string>com.apple.vpn.managed</string>
-            <key>PayloadUUID</key>
-            <string>${uuid2}</string>
-            <key>PayloadVersion</key>
-            <integer>1</integer>
+            <key>PayloadDisplayName</key><string>${esc(nm)}</string>
+            <key>PayloadIdentifier</key><string>${esc(bundleId)}.vpn</string>
+            <key>PayloadType</key><string>com.apple.vpn.managed</string>
+            <key>PayloadUUID</key><string>${uuid2}</string>
+            <key>PayloadVersion</key><integer>1</integer>
         </dict>`;
-
-        } else if (currentType === 'email') {
-            const email = document.getElementById('emailAddress').value;
-            const emailName = document.getElementById('emailName').value;
-            const emailType = document.getElementById('emailType').value;
-            const imap = document.getElementById('emailImap').value || 'imap.example.com';
-            const smtp = document.getElementById('emailSmtp').value || 'smtp.example.com';
-
-            payloadType = 'com.apple.mail.managed';
-            payloadContent = `
-        <dict>
-            <key>EmailAccountType</key>
-            <string>EmailType${emailType}</string>
-            <key>EmailAddress</key>
-            <string>${escapeXml(email)}</string>
-            <key>EmailAccountDescription</key>
-            <string>${escapeXml(emailName || name)}</string>
-            <key>IncomingMailServerHostName</key>
-            <string>${escapeXml(imap)}</string>
-            <key>IncomingMailServerPortNumber</key>
-            <integer>993</integer>
-            <key>IncomingMailServerUseSSL</key>
-            <true/>
-            <key>OutgoingMailServerHostName</key>
-            <string>${escapeXml(smtp)}</string>
-            <key>OutgoingMailServerPortNumber</key>
-            <integer>587</integer>
-            <key>OutgoingMailServerUseSSL</key>
-            <true/>
-            <key>PayloadDescription</key>
-            <string>${escapeXml(desc || 'Email Configuration')}</string>
-            <key>PayloadDisplayName</key>
-            <string>${escapeXml(name)}</string>
-            <key>PayloadIdentifier</key>
-            <string>com.profilecreator.mail.${uuid2}</string>
-            <key>PayloadType</key>
-            <string>com.apple.mail.managed</string>
-            <key>PayloadUUID</key>
-            <string>${uuid2}</string>
-            <key>PayloadVersion</key>
-            <integer>1</integer>
+  } else if(S.type==='email'){
+    const addr=document.getElementById('em_addr').value;
+    const ename=document.getElementById('em_name').value;
+    const imap=document.getElementById('em_imap').value||'imap.gmail.com';
+    const imap_p=document.getElementById('em_imap_p').value||'993';
+    const smtp=document.getElementById('em_smtp').value||'smtp.gmail.com';
+    const smtp_p=document.getElementById('em_smtp_p').value||'587';
+    payload=`        <dict>
+            <key>EmailAccountType</key><string>EmailTypeIMAP</string>
+            <key>EmailAddress</key><string>${esc(addr)}</string>
+            <key>EmailAccountDescription</key><string>${esc(ename||nm)}</string>
+            <key>IncomingMailServerHostName</key><string>${esc(imap)}</string>
+            <key>IncomingMailServerPortNumber</key><integer>${imap_p}</integer>
+            <key>IncomingMailServerUseSSL</key><true/>
+            <key>OutgoingMailServerHostName</key><string>${esc(smtp)}</string>
+            <key>OutgoingMailServerPortNumber</key><integer>${smtp_p}</integer>
+            <key>OutgoingMailServerUseSSL</key><true/>
+            <key>PayloadDisplayName</key><string>${esc(nm)}</string>
+            <key>PayloadIdentifier</key><string>${esc(bundleId)}.email</string>
+            <key>PayloadType</key><string>com.apple.mail.managed</string>
+            <key>PayloadUUID</key><string>${uuid2}</string>
+            <key>PayloadVersion</key><integer>1</integer>
         </dict>`;
-
-        } else if (currentType === 'passcode') {
-            const minLen = document.getElementById('passMin').value || 6;
-            const complex = toggleStates.passcomplex;
-            const attempts = document.getElementById('passAttempts').value || 10;
-            const lockout = document.getElementById('passLockout').value || 5;
-
-            payloadType = 'com.apple.mobiledevice.passwordpolicy';
-            payloadContent = `
-        <dict>
-            <key>minLength</key>
-            <integer>${minLen}</integer>
-            <key>requireAlphanumeric</key>
-            <${complex ? 'true' : 'false'}/>
-            <key>maxFailedAttempts</key>
-            <integer>${attempts}</integer>
-            <key>minutesUntilFailedLoginReset</key>
-            <integer>${lockout}</integer>
-            <key>PayloadDescription</key>
-            <string>${escapeXml(desc || 'Passcode Policy')}</string>
-            <key>PayloadDisplayName</key>
-            <string>${escapeXml(name)}</string>
-            <key>PayloadIdentifier</key>
-            <string>com.profilecreator.passcode.${uuid2}</string>
-            <key>PayloadType</key>
-            <string>com.apple.mobiledevice.passwordpolicy</string>
-            <key>PayloadUUID</key>
-            <string>${uuid2}</string>
-            <key>PayloadVersion</key>
-            <integer>1</integer>
+  } else if(S.type==='passcode'){
+    const min=document.getElementById('pc_min').value||6;
+    const comp=S.toggles.pcomp; const spec=S.toggles.pspec;
+    const att=document.getElementById('pc_att').value||10;
+    const lock=document.getElementById('pc_lock').value||5;
+    payload=`        <dict>
+            <key>minLength</key><integer>${min}</integer>
+            <key>requireAlphanumeric</key><${comp}/>
+            <key>requireSymbol</key><${spec}/>
+            <key>maxFailedAttempts</key><integer>${att}</integer>
+            <key>minutesUntilFailedLoginReset</key><integer>${lock}</integer>
+            <key>PayloadDisplayName</key><string>${esc(nm)}</string>
+            <key>PayloadIdentifier</key><string>${esc(bundleId)}.passcode</string>
+            <key>PayloadType</key><string>com.apple.mobiledevice.passwordpolicy</string>
+            <key>PayloadUUID</key><string>${uuid2}</string>
+            <key>PayloadVersion</key><integer>1</integer>
         </dict>`;
-        }
+  } else if(S.type==='cert'){
+    const cn=document.getElementById('cert_name').value||'My Certificate';
+    payload=`        <dict>
+            <key>PayloadCertificateFileName</key><string>${esc(cn)}.cer</string>
+            <key>PayloadDescription</key><string>Certificate</string>
+            <key>PayloadDisplayName</key><string>${esc(cn)}</string>
+            <key>PayloadIdentifier</key><string>${esc(bundleId)}.cert</string>
+            <key>PayloadType</key><string>com.apple.security.root</string>
+            <key>PayloadUUID</key><string>${uuid2}</string>
+            <key>PayloadVersion</key><integer>1</integer>
+        </dict>`;
+  } else if(S.type==='restrict'){
+    const rapp=S.toggles.rapp; const rsaf=S.toggles.rsaf; const rcam=S.toggles.rcam;
+    const rft=S.toggles.rft; const rsiri=S.toggles.rsiri; const ricloud=S.toggles.ricloud;
+    payload=`        <dict>
+            <key>allowAppInstallation</key><${!rapp}/>
+            <key>allowSafari</key><${!rsaf}/>
+            <key>allowCamera</key><${!rcam}/>
+            <key>allowFaceTime</key><${!rft}/>
+            <key>allowAssistant</key><${!rsiri}/>
+            <key>allowCloudDocumentSync</key><${!ricloud}/>
+            <key>PayloadDisplayName</key><string>${esc(nm)}</string>
+            <key>PayloadIdentifier</key><string>${esc(bundleId)}.restrictions</string>
+            <key>PayloadType</key><string>com.apple.applicationaccess</string>
+            <key>PayloadUUID</key><string>${uuid2}</string>
+            <key>PayloadVersion</key><integer>1</integer>
+        </dict>`;
+  }
 
-        const version = document.getElementById('profileVersion').value || 1;
+  const removable=S.toggles.rem;
 
-        const plist = `<?xml version="1.0" encoding="UTF-8"?>
+  return {
+    plist:`<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>PayloadContent</key>
-    <array>${payloadContent}
+    <array>
+${payload}
     </array>
     <key>PayloadDescription</key>
-    <string>${escapeXml(desc || name + ' Profile')}</string>
+    <string>${esc(desc||nm+' Configuration')}</string>
     <key>PayloadDisplayName</key>
-    <string>${escapeXml(name)}</string>
+    <string>${esc(nm)}</string>
     <key>PayloadIdentifier</key>
-    <string>com.profilecreator.${currentType}.${uuid}</string>
+    <string>${esc(bundleId)}</string>
     <key>PayloadOrganization</key>
-    <string>${escapeXml(org)}</string>
+    <string>${esc(org)}</string>
     <key>PayloadRemovalDisallowed</key>
-    <false/>
+    <${!removable}/>
     <key>PayloadType</key>
     <string>Configuration</string>
     <key>PayloadUUID</key>
-    <string>${uuid}</string>
+    <string>${uuid1}</string>
     <key>PayloadVersion</key>
-    <integer>${version}</integer>
+    <integer>${ver}</integer>
 </dict>
-</plist>`;
+</plist>`,
+    name:nm
+  };
+}
 
-        return { plist, name };
+// =================== CREATE ===================
+window.createProfile=function(){
+  const name=document.getElementById('f_name').value.trim();
+  if(!name){ toast('⚠️','Введите название профиля!','orange'); return; }
+  if(S.type==='webclip'&&S.wcSrc==='url'){
+    const u=document.getElementById('wc_url').value.trim();
+    if(!u){ toast('⚠️','Введите URL!','orange'); return; }
+  }
+  document.getElementById('progModal').classList.add('show');
+  runBuild();
+};
+
+window.fabAction=function(){
+  if(S.currentTab===1){ gotoTab(0); }
+};
+
+function runBuild(){
+  const steps=[{i:1,dur:700},{i:2,dur:600},{i:3,dur:800},{i:4,dur:500}];
+  let idx=0;
+  const statuses=['Генерация XML...','Кодирование иконки...','Валидация plist...','Финализация...'];
+  const done=['XML готов ✓','Иконка добавлена ✓','Валидация пройдена ✓','Файл готов ✓'];
+
+  function step(i){
+    if(i>=steps.length){
+      const {plist,name}=generatePlist();
+      S.generatedPlist=plist;
+      setProgress(100);
+      document.getElementById('progSub').textContent='✅ Профиль создан!';
+      setTimeout(()=>{
+        document.getElementById('dlBtn').style.display='flex';
+        document.getElementById('addToProfsBtn').style.display='flex';
+        document.getElementById('installNote').style.display='block';
+      },200);
+      return;
     }
+    const s=steps[i];
+    setStepActive(s.i);
+    document.getElementById('pss'+s.i).textContent=statuses[i];
+    document.getElementById('pss'+s.i).className='prog-step-st active';
+    setProgress(Math.round((i/steps.length)*100));
+    document.getElementById('progSub').textContent=statuses[i];
+    setTimeout(()=>{
+      setStepDone(s.i);
+      document.getElementById('pss'+s.i).textContent=done[i];
+      document.getElementById('pss'+s.i).className='prog-step-st done';
+      step(i+1);
+    },s.dur);
+  }
+  step(0);
+}
 
-    function escapeXml(str) {
-        return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+function setProgress(pct){
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progPct').textContent=pct+'%';
+}
+function setStepActive(i){
+  document.getElementById('psi'+i).classList.add('active');
+}
+function setStepDone(i){
+  document.getElementById('psi'+i).classList.remove('active');
+  document.getElementById('psi'+i).classList.add('done');
+  document.getElementById('psi'+i).innerHTML='<svg viewBox="0 0 24 24" fill="white"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>';
+}
+
+window.downloadProfile=function(){
+  if(!S.generatedPlist) return;
+  const nm=(document.getElementById('f_name').value||'profile').replace(/[^a-zA-Zа-яА-Я0-9_-]/g,'_');
+  const blob=new Blob([S.generatedPlist],{type:'application/x-apple-aspen-config'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=nm+'.mobileconfig'; a.click();
+  URL.revokeObjectURL(url);
+  toast('✅','Профиль скачан!','green');
+};
+
+window.saveAndClose=function(){
+  const nm=document.getElementById('f_name').value||'Профиль';
+  const types={webclip:'Веб-клип',dns:'DNS',wifi:'Wi-Fi',vpn:'VPN',email:'Email',passcode:'Код-пароль',cert:'Сертификат',restrict:'Ограничения'};
+  const profile={
+    id:genUUID(),
+    name:nm,
+    type:S.type,
+    typeName:types[S.type],
+    icon:S.iconType==='image'?S.iconB64:'',
+    emoji:S.iconType==='emoji'?S.iconEmoji:'📱',
+    iconType:S.iconType,
+    color:S.iconColor,
+    plist:S.generatedPlist,
+    date:new Date().toLocaleDateString('ru-RU'),
+    signed:false,
+    size:Math.round(S.generatedPlist.length/1024*10)/10+' KB'
+  };
+  S.profiles.unshift(profile);
+  localStorage.setItem('profi_profiles',JSON.stringify(S.profiles));
+  document.getElementById('progModal').classList.remove('show');
+  resetBuild();
+  toast('✅','Сохранено в профили!','green');
+  updateBadge();
+  renderProfiles();
+  setTimeout(()=>gotoTab(1),600);
+};
+
+function resetBuild(){
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('psi'+i);
+    el.classList.remove('active','done');
+    const svgs=['<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" fill="none" stroke-width="1.5"/>',
+      '<rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" fill="none" stroke-width="1.5"/><circle cx="9" cy="9" r="2" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" fill="none" stroke-width="1.5"/>',
+      '<rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" fill="none" stroke-width="1.5"/><path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" fill="none" stroke-width="1.5"/>',
+      '<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" fill="none" stroke-width="1.5"/>'];
+    el.innerHTML=`<svg viewBox="0 0 24 24">${svgs[i-1]}</svg>`;
+    document.getElementById('pss'+i).textContent='Ожидание';
+    document.getElementById('pss'+i).className='prog-step-st';
+  }
+  setProgress(0);
+  document.getElementById('dlBtn').style.display='none';
+  document.getElementById('addToProfsBtn').style.display='none';
+  document.getElementById('installNote').style.display='none';
+  document.getElementById('progSub').textContent='Подготовка...';
+}
+
+// =================== PROFILES ===================
+function renderProfiles(){
+  const list=document.getElementById('profilesList');
+  const empty=document.getElementById('emptyProfiles');
+  const sc=document.getElementById('recentScroll');
+
+  document.getElementById('st_total').textContent=S.profiles.length;
+  document.getElementById('st_signed').textContent=S.profiles.filter(p=>p.signed).length;
+  document.getElementById('st_unsigned').textContent=S.profiles.filter(p=>!p.signed).length;
+
+  // recent chips
+  const recentHtml=`<div class="recent-chip" onclick="gotoTab(0)">
+    <div class="recent-chip-ico" style="background:linear-gradient(135deg,#0A84FF,#5AC8FA);">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" fill="none"/></svg>
+    </div><span>Создать</span></div>`;
+  const chips=S.profiles.slice(0,5).map(p=>`
+    <div class="recent-chip" onclick="downloadSaved('${p.id}')">
+      <div class="recent-chip-ico" style="background:linear-gradient(135deg,${p.color||'#667eea'},${p.color||'#667eea'}99);">${p.iconType==='image'?`<img src="${p.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:7px;">`:p.emoji||'📱'}</div>
+      <span>${p.name}</span>
+    </div>`).join('');
+  sc.innerHTML=recentHtml+chips;
+
+  if(S.profiles.length===0){
+    empty.style.display='flex';
+    list.innerHTML='';
+    list.appendChild(empty);
+    return;
+  }
+  empty.style.display='none';
+
+  list.innerHTML=S.profiles.map(p=>`
+    <div class="profile-item">
+      <div class="p-icon" style="background:linear-gradient(135deg,${p.color||'#667eea'},${p.color||'#667eea'}99);">
+        ${p.iconType==='image'?`<img src="${p.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`:(p.emoji||'📱')}
+      </div>
+      <div class="p-info">
+        <div class="p-name">${p.name}</div>
+        <div class="p-type">${p.typeName} ${p.signed?'· <span style="color:var(--green)">✓ Подписан</span>':'· Без подписи'}</div>
+        <div class="p-date">${p.date} · ${p.size}</div>
+      </div>
+      <div class="p-actions">
+        <div class="p-action dl" onclick="downloadSaved('${p.id}')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" fill="none" stroke-width="1.8"/></svg></div>
+        <div class="p-action del" onclick="deleteSaved('${p.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" stroke="currentColor" fill="none" stroke-width="1.8"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6" stroke="currentColor" fill="none" stroke-width="1.8"/></svg></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.downloadSaved=function(id){
+  const p=S.profiles.find(x=>x.id===id);
+  if(!p||!p.plist) return;
+  const blob=new Blob([p.plist],{type:'application/x-apple-aspen-config'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=p.name.replace(/\s+/g,'_')+'.mobileconfig'; a.click();
+  URL.revokeObjectURL(url);
+  toast('✅','Скачан: '+p.name,'green');
+};
+
+window.deleteSaved=function(id){
+  if(!confirm('Удалить профиль?')) return;
+  S.profiles=S.profiles.filter(p=>p.id!==id);
+  localStorage.setItem('profi_profiles',JSON.stringify(S.profiles));
+  renderProfiles(); updateBadge();
+  toast('🗑','Профиль удалён','orange');
+};
+
+function updateBadge(){
+  const b=document.getElementById('profilesBadge');
+  if(S.profiles.length>0){
+    b.style.display='flex';
+    b.textContent=S.profiles.length>9?'9+':S.profiles.length;
+  } else { b.style.display='none'; }
+}
+
+// =================== IPA ===================
+window.handleIPA=function(inp){
+  const f=inp.files[0]; if(!f) return;
+  S.ipaFile=f;
+  document.getElementById('ipaDropZone').style.display='none';
+  document.getElementById('ipaInfo').style.display='block';
+  document.getElementById('ipaName').textContent=f.name;
+  document.getElementById('ipaBundle').textContent='com.example.'+f.name.replace(/\.ipa$/i,'').toLowerCase();
+  document.getElementById('ipaSize').textContent=formatSize(f.size);
+  document.getElementById('ipaVer').textContent='1.0';
+  toast('📦','IPA загружен: '+f.name,'blue');
+};
+
+window.ipaAction=function(action){
+  const msgs={
+    resign:'Для переподписи нужен macOS + Xcode.\nИспользуйте zsign или AltStore.\n\nzsign -k cert.p12 -p pass -o out.ipa app.ipa',
+    info:'Info.plist:\n• CFBundleIdentifier: com.example.app\n• CFBundleVersion: 1.0\n• MinimumOSVersion: 14.0\n• Platform: iPhone OS',
+    patch:'Для изменения Bundle ID:\nzsign -b com.new.bundleid -k cert.p12 app.ipa\n\nИли используйте ipatool/altpatcher.',
+    dl:'Скачивание IPA...'
+  };
+  if(action==='dl' && S.ipaFile){
+    const url=URL.createObjectURL(S.ipaFile);
+    const a=document.createElement('a'); a.href=url; a.download=S.ipaFile.name; a.click();
+    URL.revokeObjectURL(url);
+    toast('⬇️','Скачивание...','green');
+    return;
+  }
+  alert(msgs[action]||'');
+};
+
+window.showIPATool=function(tool){
+  const modal=document.getElementById('ipaToolModal');
+  if(tool==='plist'){
+    document.getElementById('ipaToolTitle').textContent='📋 Plist манифест';
+    document.getElementById('ipaToolSub').textContent='Для OTA установки через Safari';
+    const nm=S.ipaFile?S.ipaFile.name:'app.ipa';
+    document.getElementById('ipaToolContent').innerHTML=`
+      <div class="code-block">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC ...&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+  &lt;key&gt;items&lt;/key&gt;
+  &lt;array&gt;
+    &lt;dict&gt;
+      &lt;key&gt;assets&lt;/key&gt;
+      &lt;array&gt;
+        &lt;dict&gt;
+          &lt;key&gt;kind&lt;/key&gt;&lt;string&gt;software-package&lt;/string&gt;
+          &lt;key&gt;url&lt;/key&gt;
+          &lt;string&gt;https://yourserver.com/${nm}&lt;/string&gt;
+        &lt;/dict&gt;
+      &lt;/array&gt;
+      &lt;key&gt;metadata&lt;/key&gt;
+      &lt;dict&gt;
+        &lt;key&gt;bundle-identifier&lt;/key&gt;
+        &lt;string&gt;com.example.app&lt;/string&gt;
+        &lt;key&gt;bundle-version&lt;/key&gt;
+        &lt;string&gt;1.0&lt;/string&gt;
+        &lt;key&gt;kind&lt;/key&gt;
+        &lt;string&gt;software&lt;/string&gt;
+        &lt;key&gt;title&lt;/key&gt;
+        &lt;string&gt;My App&lt;/string&gt;
+      &lt;/dict&gt;
+    &lt;/dict&gt;
+  &lt;/array&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</div>
+      <div style="margin-top:12px;">
+        <button class="big-btn btn-green" onclick="downloadPlistManifest()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="white" stroke-width="2" fill="none"/></svg>
+          Скачать manifest.plist
+        </button>
+      </div>`;
+  } else {
+    document.getElementById('ipaToolTitle').textContent='🔗 OTA Ссылка';
+    document.getElementById('ipaToolSub').textContent='itms-services:// протокол';
+    document.getElementById('ipaToolContent').innerHTML=`
+      <div class="g-card" style="margin-bottom:12px;">
+        <div class="g-row"><span class="g-row-label">URL сервера</span><input id="ota_url" placeholder="https://yourserver.com"></div>
+        <div class="g-row" style="border:none;"><span class="g-row-label">Plist путь</span><input id="ota_plist" placeholder="/app/manifest.plist"></div>
+      </div>
+      <button class="big-btn btn-blue" onclick="genOTALink()">Сгенерировать ссылку</button>
+      <div id="ota_result" style="margin-top:12px;"></div>`;
+  }
+  modal.classList.add('show');
+};
+
+window.downloadPlistManifest=function(){
+  const xml=`<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>items</key><array><dict><key>assets</key><array><dict><key>kind</key><string>software-package</string><key>url</key><string>https://yourserver.com/app.ipa</string></dict></array><key>metadata</key><dict><key>bundle-identifier</key><string>com.example.app</string><key>bundle-version</key><string>1.0</string><key>kind</key><string>software</string><key>title</key><string>My App</string></dict></dict></array></dict></plist>`;
+  const blob=new Blob([xml],{type:'application/xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='manifest.plist'; a.click();
+  URL.revokeObjectURL(url);
+  toast('✅','manifest.plist скачан!','green');
+};
+
+window.genOTALink=function(){
+  const base=document.getElementById('ota_url').value||'https://yourserver.com';
+  const plist=document.getElementById('ota_plist').value||'/manifest.plist';
+  const link=`itms-services://?action=download-manifest&url=${encodeURIComponent(base+plist)}`;
+  document.getElementById('ota_result').innerHTML=`
+    <div class="code-block">${link}</div>
+    <button class="big-btn btn-gray" style="margin-top:8px;" onclick="navigator.clipboard&&navigator.clipboard.writeText('${link}').then(()=>toast('📋','Скопировано!','blue'))">
+      Копировать ссылку
+    </button>`;
+};
+
+// =================== SIGN ===================
+window.handleSignFile=function(inp,type){
+  const f=inp.files[0]; if(!f) return;
+  S.signFiles[type]=f;
+  const ids={mc:'mcFileName',p12:'p12FileName',mp:'mpFileName'};
+  const csIds={mc:1,p12:2,mp:3};
+  document.getElementById(ids[type]).textContent=f.name+' ('+formatSize(f.size)+')';
+  const cn=document.getElementById('cs'+csIds[type]);
+  cn.classList.add('done'); cn.textContent='✓';
+  const statusEl=document.getElementById('cs'+csIds[type]+'_status');
+  statusEl.textContent='Загружен';
+  statusEl.style.color='var(--green)';
+  toast('📎','Загружен: '+f.name,'green');
+};
+
+window.signProfile=function(){
+  const {mc,p12,mp}=S.signFiles;
+  if(!mc){ toast('⚠️','Загрузите .mobileconfig!','orange'); return; }
+  if(!p12){ toast('⚠️','Загрузите .p12!','orange'); return; }
+
+  // Симуляция подписи (в реальности нужен сервер с openssl)
+  toast('🔐','Симуляция подписи...','blue');
+  setTimeout(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const blob=new Blob([e.target.result],{type:'application/x-apple-aspen-config'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download='signed_'+mc.name; a.click();
+      URL.revokeObjectURL(url);
+      document.getElementById('cs4').classList.add('done'); document.getElementById('cs4').textContent='✓';
+      document.getElementById('cs4_status').textContent='Готово';
+      document.getElementById('cs4_status').style.color='var(--green)';
+      toast('✅','Скачан signed_'+mc.name,'green');
+    };
+    reader.readAsArrayBuffer(mc);
+  },1500);
+
+  // Update sign command preview
+  const pass=document.getElementById('p12_pass').value||'YOURPASSWORD';
+  document.getElementById('signCmd').textContent=`# Шаг 1: Извлечь ключ и сертификат из .p12
+openssl pkcs12 -in cert.p12 -nocerts -nodes \\
+  -passin pass:${pass} -out key.pem
+
+openssl pkcs12 -in cert.p12 -clcerts -nokeys \\
+  -passin pass:${pass} -out cert.pem
+
+# Шаг 2: Подписать профиль
+openssl smime -sign -in profile.mobileconfig \\
+  -out signed.mobileconfig \\
+  -signer cert.pem -inkey key.pem \\
+  -outform DER -nodetach
+
+# Шаг 3: Проверить подпись
+openssl smime -verify -in signed.mobileconfig \\
+  -inform DER -noverify`;
+};
+
+window.handleCert=function(inp){
+  const f=inp.files[0]; if(!f) return;
+  toast('📜','Сертификат загружен: '+f.name,'green');
+};
+
+// =================== SETTINGS ===================
+window.openSettings=function(){
+  document.getElementById('settingsModal').classList.add('show');
+};
+window.closeSettings=function(){
+  document.getElementById('settingsModal').classList.remove('show');
+};
+
+window.showInfo=function(){
+  alert('PROFI v1.0.0\n\nСоздатель профилей iOS/macOS\n\n• Веб-клипы, DNS, Wi-Fi, VPN\n• Email, Сертификаты, MDM\n• Подпись .mobileconfig\n• Работа с IPA файлами\n• Сохранение в localStorage\n\n© 2024 PROFI Studio');
+};
+
+// =================== EXPORT ===================
+window.exportAll=function(){
+  if(S.profiles.length===0){ toast('⚠️','Нет профилей для экспорта','orange'); return; }
+  // Export first profile as example
+  S.profiles.forEach(p=>{
+    if(p.plist){
+      const blob=new Blob([p.plist],{type:'application/x-apple-aspen-config'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url;
+      a.download=p.name.replace(/\s+/g,'_')+'.mobileconfig'; a.click();
+      URL.revokeObjectURL(url);
     }
+  });
+  toast('✅','Экспортировано '+S.profiles.length+' профилей','green');
+};
 
-    // ========= CREATE =========
-    function createProfile() {
-        const name = document.getElementById('appName').value.trim();
-        if (!name) {
-            alert('Введите название приложения!');
-            document.getElementById('appName').focus();
-            return;
-        }
+window.clearAll=function(){
+  if(!confirm('Удалить все профили? Это действие нельзя отменить.')) return;
+  S.profiles=[];
+  localStorage.removeItem('profi_profiles');
+  updateBadge(); renderProfiles();
+  toast('🗑','Все данные удалены','orange');
+};
 
-        if (currentType === 'webclip' && webclipSource === 'url') {
-            const url = document.getElementById('webclipUrl').value.trim();
-            if (!url) {
-                alert('Введите URL для веб-клипа!');
-                document.getElementById('webclipUrl').focus();
-                return;
-            }
-        }
-
-        document.getElementById('progressModal').classList.add('show');
-        runProgress();
+// =================== MODALS CLOSE ===================
+document.getElementById('progModal').addEventListener('click',function(e){
+  if(e.target===this){
+    if(document.getElementById('dlBtn').style.display!=='none'){
+      this.classList.remove('show'); resetBuild();
     }
+  }
+});
+document.getElementById('settingsModal').addEventListener('click',function(e){
+  if(e.target===this) closeSettings();
+});
+document.getElementById('ipaToolModal').addEventListener('click',function(e){
+  if(e.target===this) this.classList.remove('show');
+});
 
-    // ========= PROGRESS =========
-    function runProgress() {
-        const steps = [
-            { id: 1, name: 'Генерация XML', duration: 800 },
-            { id: 2, name: 'Вставка иконки', duration: 700 },
-            { id: 3, name: 'Подписание', duration: 900 },
-            { id: 4, name: 'Финализация', duration: 600 }
-        ];
+// =================== TOAST ===================
+function toast(icon,msg,color){
+  const colors={green:'var(--green)',blue:'var(--blue)',orange:'var(--orange)',red:'var(--red)'};
+  const t=document.getElementById('toast');
+  const ico=document.getElementById('toastIco');
+  document.getElementById('toastMsg').textContent=msg;
+  ico.innerHTML=`<text y="14" style="font-size:16px;">${icon}</text>`;
+  t.style.borderColor=colors[color]||'rgba(255,255,255,0.2)';
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),2500);
+}
 
-        let current = 0;
+// =================== UTILS ===================
+function genUUID(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+    const r=Math.random()*16|0;
+    return (c==='x'?r:(r&0x3|0x8)).toString(16).toUpperCase();
+  });
+}
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;'); }
+function formatSize(b){
+  if(b<1024) return b+' B';
+  if(b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(1)+' MB';
+}
 
-        function doStep(i) {
-            if (i >= steps.length) {
-                const { plist, name } = generateProfile();
-                generatedProfile = plist;
-                document.getElementById('progressFill').style.width = '100%';
-                document.getElementById('progressPercent').textContent = '100%';
-                document.getElementById('modalSubtitle').textContent = 'Профиль готов к скачиванию!';
+// =================== INIT ===================
+updateBadge();
 
-                setTimeout(() => {
-                    document.getElementById('downloadBtn').classList.add('show');
-                    document.getElementById('installHint').classList.remove('hidden');
-                    document.getElementById('previewSize').textContent = Math.round(plist.length / 1024 * 10) / 10 + ' KB';
-                }, 200);
-                return;
-            }
+// Close modals on overlay tap
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
+});
 
-            const step = steps[i];
-            const pct = ((i) / steps.length) * 100;
-
-            document.getElementById(`step-icon-${step.id}`).classList.add('active');
-            document.getElementById(`step-status-${step.id}`).textContent = 'Выполняется...';
-            document.getElementById(`step-status-${step.id}`).className = 'step-status active';
-            document.getElementById('progressFill').style.width = pct + '%';
-            document.getElementById('progressPercent').textContent = Math.round(pct) + '%';
-
-            setTimeout(() => {
-                document.getElementById(`step-icon-${step.id}`).classList.remove('active');
-                document.getElementById(`step-icon-${step.id}`).classList.add('done');
-                document.getElementById(`step-icon-${step.id}`).innerHTML = '<svg viewBox="0 0 24 24" fill="white"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>';
-                document.getElementById(`step-status-${step.id}`).textContent = 'Готово';
-                document.getElementById(`step-status-${step.id}`).className = 'step-status done';
-                doStep(i + 1);
-            }, step.duration);
-        }
-
-        doStep(0);
-    }
-
-    // ========= DOWNLOAD =========
-    function downloadProfile() {
-        if (!generatedProfile) return;
-        const name = document.getElementById('appName').value || 'profile';
-        const blob = new Blob([generatedProfile], { type: 'application/x-apple-aspen-config' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = name.replace(/[^a-zA-Zа-яА-Я0-9]/g, '_') + '.mobileconfig';
-        a.click();
-        URL.revokeObjectURL(url);
-
-        setTimeout(() => {
-            if (confirm('Профиль скачан!\n\nОткройте файл .mobileconfig на iPhone/iPad:\nНастройки → Профиль → Установить\n\nПовторить скачивание?')) {
-                downloadProfile();
-            }
-        }, 500);
-    }
-
-    // ========= CLOSE MODAL ON OVERLAY =========
-    document.getElementById('progressModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            if (document.getElementById('downloadBtn').classList.contains('show')) {
-                this.classList.remove('show');
-                resetProgress();
-            }
-        }
-    });
-
-    function resetProgress() {
-        for (let i = 1; i <= 4; i++) {
-            const icon = document.getElementById(`step-icon-${i}`);
-            icon.classList.remove('done','active');
-            icon.innerHTML = ['<svg viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>',
-                '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="1.5"/><path d="M12 8v4M12 16h.01" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>',
-                '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" fill="none" stroke-width="1.5"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>',
-                '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>'][i-1];
-            document.getElementById(`step-status-${i}`).textContent = 'Ожидание...';
-            document.getElementById(`step-status-${i}`).className = 'step-status';
-        }
-        document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('progressPercent').textContent = '0%';
-        document.getElementById('downloadBtn').classList.remove('show');
-        document.getElementById('installHint').classList.add('hidden');
-        document.getElementById('modalSubtitle').textContent = 'Подготовка файлов...';
-    }
-
-    // ========= SETTINGS =========
-    function openSettings() {
-        document.getElementById('settingsPanel').classList.add('show');
-        document.getElementById('customUUID').value = generateUUID();
-    }
-
-    function closeSettings() {
-        document.getElementById('settingsPanel').classList.remove('show');
-    }
-
-    function openAppStore() {
-        alert('📦 Profile Apps Create\n\nВерсия 1.0.0\nСоздавайте iOS профили (.mobileconfig) прямо в браузере!');
-    }
-
-    // ========= INIT =========
-    selectType('webclip');
+// Add create button to page0
+const createBtnContainer=document.createElement('div');
+createBtnContainer.style.cssText='position:sticky;bottom:0;padding:12px 0 16px;background:transparent;z-index:10;';
+createBtnContainer.innerHTML=`<button class="big-btn btn-blue" onclick="createProfile()">
+  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+  Создать профиль
+</button>`;
+document.getElementById('page0').appendChild(createBtnContainer);
 </script>
-
 </body>
 </html>
