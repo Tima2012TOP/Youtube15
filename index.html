@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>YouTube15+++</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :root {
+    --glass-bg: rgba(255,255,255,0.12);
+    --glass-border: rgba(255,255,255,0.25);
+    --glass-shadow: rgba(0,0,0,0.2);
+    --blur: 20px;
+    --accent: #FF0000;
+    --text: #ffffff;
+    --text-secondary: rgba(255,255,255,0.6);
+    --bg-dark: #0f0f0f;
+    --card-bg: rgba(255,255,255,0.06);
+    --tab-height: 80px;
+  }
+
+  body {
+    background: var(--bg-dark);
+    color: var(--text);
+    font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+
+  /* ===== SPLASH SCREEN ===== */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  #splash.hide {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+  }
+
+  .splash-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: splashIn 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+
+  @keyframes splashIn {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .splash-icon {
+    width: 90px;
+    height: 90px;
+    background: var(--accent);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 60px rgba(255,0,0,0.5), 0 20px 40px rgba(0,0,0,0.5);
+    animation: glowPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse {
+    0%,100% { box-shadow: 0 0 40px rgba(255,0,0,0.4), 0 20px 40px rgba(0,0,0,0.5); }
+    50% { box-shadow: 0 0 80px rgba(255,0,0,0.8), 0 20px 40px rgba(0,0,0,0.5); }
+  }
+
+  .splash-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ffffff, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .splash-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: -10px;
+  }
+
+  .splash-loader {
+    margin-top: 60px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .loader-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: dotBounce 1.4s ease-in-out infinite;
+  }
+
+  .loader-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loader-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dotBounce {
+    0%,80%,100% { transform: scale(0.6); opacity: 0.3; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ===== MAIN APP ===== */
+  #app {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+
+  #app.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  /* ===== TOP BAR ===== */
+  .topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 50px 16px 12px;
+    background: linear-gradient(to bottom, rgba(15,15,15,0.95) 70%, transparent);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar-icon {
+    width: 32px;
+    height: 22px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topbar-name {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .topbar-name span {
+    color: var(--accent);
+  }
+
+  .topbar-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--blur));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .icon-btn:active {
+    transform: scale(0.92);
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* ===== CONTENT ===== */
+  .content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding-top: 110px;
+    padding-bottom: calc(var(--tab-height) + 20px);
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .content-area::-webkit-scrollbar { display: none; }
+
+  /* ===== TAB PAGES ===== */
+  .page {
+    display: none;
+    animation: pageIn 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .page.active { display: block; }
+
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== FILTER CHIPS ===== */
+  .filter-row {
+    padding: 8px 16px 16px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .chip {
+    flex-shrink: 0;
+    padding: 7px 16px;
+    border-radius: 20px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--blur));
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .chip.active {
+    background: #ffffff;
+    color: #000000;
+    border-color: transparent;
+  }
+
+  .chip:active { transform: scale(0.95); }
+
+  /* ===== VIDEO CARD ===== */
+  .video-list {
+    padding: 0 0 20px;
+  }
+
+  .video-card {
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .video-card:active { transform: scale(0.98); }
+
+  .thumb-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: #1a1a1a;
+  }
+
+  .thumb-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+  }
+
+  .video-card:active .thumb-wrap img { transform: scale(1.02); }
+
+  .duration-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .video-meta {
+    display: flex;
+    padding: 10px 16px;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .channel-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: #2a2a2a;
+  }
+
+  .video-info { flex: 1; }
+
+  .video-title {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .video-subinfo {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .video-menu {
+    padding: 4px;
+    opacity: 0.6;
+  }
+
+  /* ===== SHORTS GRID ===== */
+  .shorts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    padding: 0;
+  }
+
+  .short-card {
+    position: relative;
+    aspect-ratio: 9/16;
+    overflow: hidden;
+    background: #1a1a1a;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .short-card:active { transform: scale(0.97); }
+
+  .short-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .short-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 30%, transparent);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px 8px;
+  }
+
+  .short-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+
+  .short-views {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .short-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--accent);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== GLASS TAB BAR ===== */
+  .tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--tab-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(15,15,15,0.6);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .tab-item svg {
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .tab-item.active svg {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 8px rgba(255,0,0,0.6));
+  }
+
+  .tab-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+  }
+
+  .tab-item.active .tab-label {
+    color: #ff3b30;
+    font-weight: 700;
+  }
+
+  .tab-indicator {
+    position: absolute;
+    top: 0;
+    width: 30px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    opacity: 0;
+  }
+
+  .tab-item.active .tab-indicator { opacity: 1; }
+
+  /* CREATE BUTTON */
+  .create-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff3b30, #ff6b35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(255,59,48,0.4);
+    transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    cursor: pointer;
+  }
+
+  .create-btn:active {
+    transform: scale(0.9);
+    box-shadow: 0 2px 10px rgba(255,59,48,0.3);
+  }
+
+  /* ===== LIBRARY PAGE ===== */
+  .library-section {
+    padding: 8px 16px 16px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .library-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s;
+  }
+
+  .library-item:active {
+    transform: scale(0.98);
+    background: rgba(255,255,255,0.1);
+  }
+
+  .lib-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .lib-text { flex: 1; }
+  .lib-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .lib-sub { font-size: 13px; color: var(--text-secondary); }
+
+  /* ===== ACCOUNT PAGE ===== */
+  .account-banner {
+    margin: 16px;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(255,59,48,0.2), rgba(255,107,53,0.1));
+    border: 1px solid rgba(255,59,48,0.3);
+    border-radius: 20px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+  }
+
+  .account-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff3b30, #ff6b35);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 30px rgba(255,59,48,0.4);
+  }
+
+  .account-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .account-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .sign-in-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: var(--accent);
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255,0,0,0.3);
+  }
+
+  .sign-in-btn:active { transform: scale(0.95); }
+
+  .settings-list {
+    margin: 16px;
+  }
+
+  .settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .settings-item:active { background: rgba(255,255,255,0.1); }
+  .settings-left { display: flex; align-items: center; gap: 12px; }
+  .settings-label { font-size: 15px; font-weight: 500; }
+
+  /* ===== VIDEO PLAYER MODAL ===== */
+  .player-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .player-modal.open {
+    transform: translateY(0);
+  }
+
+  .player-topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    padding: 50px 16px 16px;
+    z-index: 10;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+  }
+
+  .player-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .player-close:active { transform: scale(0.9); }
+
+  .yt-embed-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background: #000;
+    flex-shrink: 0;
+    margin-top: 90px;
+  }
+
+  .yt-embed-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .player-info {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: var(--bg-dark);
+  }
+
+  .player-info::-webkit-scrollbar { display: none; }
+
+  .player-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 12px;
+  }
+
+  .player-channel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .pc-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #333;
+  }
+
+  .pc-name { font-size: 14px; font-weight: 600; }
+  .pc-subs { font-size: 13px; color: var(--text-secondary); }
+
+  .action-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .action-pill {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: not-allowed;
+  }
+
+  .action-pill.disabled { opacity: 0.5; }
+
+  .no-acct-notice {
+    padding: 10px 14px;
+    background: rgba(255,214,10,0.1);
+    border: 1px solid rgba(255,214,10,0.2);
+    border-radius: 10px;
+    font-size: 12px;
+    color: rgba(255,214,10,0.9);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ===== CREATE MODAL ===== */
+  .create-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 600;
+    background: rgba(20,20,20,0.95);
+    backdrop-filter: blur(40px) saturate(180%);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px 24px 0 0;
+    padding: 20px 20px 40px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .create-modal.open { transform: translateY(0); }
+
+  .create-handle {
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .create-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; text-align: center; }
+
+  .create-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--card-bg);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .create-option:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
+
+  .create-opt-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff3b30, #ff6b35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .create-opt-text .opt-title { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+  .create-opt-text .opt-sub { font-size: 13px; color: var(--text-secondary); }
+
+  .overlay-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 590;
+    display: none;
+    backdrop-filter: blur(2px);
+  }
+
+  .overlay-bg.show { display: block; }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(40,40,40,0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ===== SKELETON ===== */
+  .skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .skel-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    margin-bottom: 10px;
+  }
+
+  .skel-line {
+    height: 14px;
+    border-radius: 7px;
+    margin-bottom: 8px;
+  }
+
+  .skel-line.w80 { width: 80%; }
+  .skel-line.w60 { width: 60%; }
+
+  /* ===== BADGE ===== */
+  .badge-15 {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: rgba(255,59,48,0.15);
+    border: 1px solid rgba(255,59,48,0.3);
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ff3b30;
+    margin-left: auto;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SPLASH ===== -->
+<div id="splash">
+  <div class="splash-logo">
+    <div class="splash-icon">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+        <path d="M18 15L30 22L18 29V15Z" fill="white"/>
+      </svg>
+    </div>
+    <div>
+      <div class="splash-title">YouTube15+++</div>
+      <div class="splash-sub">iOS 15 Optimized Client</div>
+    </div>
+  </div>
+  <div class="splash-loader">
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M7 5.5L13 9L7 12.5V5.5Z" fill="white"/>
+        </svg>
+      </div>
+      <div class="topbar-name">YouTube<span>15</span>+++</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="icon-btn" onclick="showToast('Search coming soon')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.7"/>
+          <path d="M12.5 12.5L15.5 15.5" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="icon-btn" onclick="showToast('Notifications require login')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M9 2C9 2 5 4 5 9V13H13V9C13 4 9 2 9 2Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M7 13C7 14.105 7.895 15 9 15C10.105 15 11 14.105 11 13" stroke="white" stroke-width="1.6"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="content-area">
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <div class="filter-row" id="filterRow">
+        <div class="chip active" onclick="setChip(this)">All</div>
+        <div class="chip" onclick="setChip(this)">Gaming</div>
+        <div class="chip" onclick="setChip(this)">Music</div>
+        <div class="chip" onclick="setChip(this)">Tech</div>
+        <div class="chip" onclick="setChip(this)">Science</div>
+        <div class="chip" onclick="setChip(this)">Sports</div>
+        <div class="chip" onclick="setChip(this)">News</div>
+        <div class="chip" onclick="setChip(this)">Movies</div>
+      </div>
+      <div class="video-list" id="videoList">
+        <!-- Skeletons while loading -->
+        <div id="skeletons">
+          <div style="margin-bottom:20px">
+            <div class="skel-thumb skeleton"></div>
+            <div style="padding:10px 16px">
+              <div class="skel-line w80 skeleton"></div>
+              <div class="skel-line w60 skeleton"></div>
+            </div>
+          </div>
+          <div style="margin-bottom:20px">
+            <div class="skel-thumb skeleton"></div>
+            <div style="padding:10px 16px">
+              <div class="skel-line w80 skeleton"></div>
+              <div class="skel-line w60 skeleton"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHORTS PAGE -->
+    <div id="page-shorts" class="page">
+      <div style="padding:16px 16px 12px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M13.5 4L8 11H12.5L8.5 18L16 10H11L13.5 4Z" fill="#FF0000"/>
+          </svg>
+          Shorts
+        </div>
+        <div class="badge-15">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <circle cx="5" cy="5" r="4" fill="#ff3b30"/>
+          </svg>
+          Turbo
+        </div>
+      </div>
+      <div class="shorts-grid" id="shortsGrid"></div>
+    </div>
+
+    <!-- CREATE PAGE -->
+    <div id="page-create" class="page">
+      <div style="padding:80px 16px;text-align:center">
+        <div style="font-size:40px;margin-bottom:16px">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" style="margin:0 auto;display:block">
+            <circle cx="30" cy="30" r="28" fill="rgba(255,59,48,0.15)" stroke="rgba(255,59,48,0.4)" stroke-width="1.5"/>
+            <path d="M22 30H38M30 22V38" stroke="#ff3b30" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px">Create Content</div>
+        <div style="font-size:14px;color:var(--text-secondary);margin-bottom:24px">Sign in to upload and create</div>
+        <div class="sign-in-btn" onclick="showToast('Sign in required to create')">Sign In to Create</div>
+      </div>
+    </div>
+
+    <!-- LIBRARY PAGE -->
+    <div id="page-library" class="page">
+      <div class="library-section">
+        <div class="section-title">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <rect x="3" y="3" width="7" height="7" rx="2" fill="rgba(255,255,255,0.6)"/>
+            <rect x="12" y="3" width="7" height="7" rx="2" fill="rgba(255,255,255,0.6)"/>
+            <rect x="3" y="12" width="7" height="7" rx="2" fill="rgba(255,255,255,0.6)"/>
+            <rect x="12" y="12" width="7" height="7" rx="2" fill="rgba(255,255,255,0.6)"/>
+          </svg>
+          Library
+        </div>
+
+        <div class="library-item" onclick="showToast('Sign in to access history')">
+          <div class="lib-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <circle cx="11" cy="11" r="8" stroke="rgba(255,255,255,0.7)" stroke-width="1.6"/>
+              <path d="M11 7V11L14 13" stroke="rgba(255,255,255,0.7)" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="lib-text">
+            <div class="lib-title">Watch History</div>
+            <div class="lib-sub">Sign in to see your history</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4L10 8L6 12" stroke="rgba(255,255,255,0.4)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="library-item" onclick="showToast('Sign in to access playlists')">
+          <div class="lib-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M4 7H14M4 11H14M4 15H10" stroke="rgba(255,255,255,0.7)" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M16 11L20 14L16 17V11Z" fill="rgba(255,255,255,0.7)"/>
+            </svg>
+          </div>
+          <div class="lib-text">
+            <div class="lib-title">Playlists</div>
+            <div class="lib-sub">Your saved playlists</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4L10 8L6 12" stroke="rgba(255,255,255,0.4)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="library-item" onclick="showToast('Sign in to see liked videos')">
+          <div class="lib-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M11 18C11 18 4 13.5 4 9C4 6.8 5.8 5 8 5C9.2 5 10.3 5.6 11 6.5C11.7 5.6 12.8 5 14 5C16.2 5 18 6.8 18 9C18 13.5 11 18 11 18Z" stroke="rgba(255,255,255,0.7)" stroke-width="1.6"/>
+            </svg>
+          </div>
+          <div class="lib-text">
+            <div class="lib-title">Liked Videos</div>
+            <div class="lib-sub">Videos you've liked</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4L10 8L6 12" stroke="rgba(255,255,255,0.4)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="library-item" onclick="showToast('Watch Later requires sign in')">
+          <div class="lib-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <circle cx="11" cy="11" r="8" stroke="rgba(255,255,255,0.7)" stroke-width="1.6"/>
+              <path d="M11 8V12L14 14" stroke="rgba(255,255,255,0.7)" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M7 3L5 5" stroke="rgba(255,255,255,0.4)" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M15 3L17 5" stroke="rgba(255,255,255,0.4)" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="lib-text">
+            <div class="lib-title">Watch Later</div>
+            <div class="lib-sub">Saved for later</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4L10 8L6 12" stroke="rgba(255,255,255,0.4)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="library-item" onclick="showToast('Downloads not available')">
+          <div class="lib-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M11 4V14M7 10L11 14L15 10" stroke="rgba(255,255,255,0.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 17H18" stroke="rgba(255,255,255,0.7)" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="lib-text">
+            <div class="lib-title">Downloads</div>
+            <div class="lib-sub">Offline videos</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4L10 8L6 12" stroke="rgba(255,255,255,0.4)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ACCOUNT PAGE -->
+    <div id="page-account" class="page">
+      <div class="account-banner">
+        <div class="account-avatar">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="14" r="7" fill="rgba(255,255,255,0.9)"/>
+            <path d="M4 32C4 25.373 10.268 20 18 20C25.732 20 32 25.373 32 32" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="account-name">Guest User</div>
+        <div class="account-sub">No account — limited features</div>
+        <div class="sign-in-btn" onclick="showToast('Sign in via Google account')">
+          <span>Sign In with Google</span>
+        </div>
+      </div>
+
+      <div class="settings-list">
+        <div style="font-size:13px;font-weight:600;color:var(--text-secondary);padding:0 4px;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Settings</div>
+
+        <div class="settings-item" onclick="showToast('Dark mode is always on')">
+          <div class="settings-left">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 3C6.134 3 3 6.134 3 10C3 13.866 6.134 17 10 17C13.866 17 17 13.866 17 10C17 6.134 13.866 3 10 3ZM10 5V10L13 13" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M17 10C17 6.134 13.866 3 10 3" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="settings-label">Dark Mode</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="7" width="16" height="8" rx="4" fill="#34C759"/>
+            <circle cx="14" cy="11" r="3" fill="white"/>
+          </svg>
+        </div>
+
+        <div class="settings-item" onclick="showToast('iOS 15 engine active')">
+          <div class="settings-left">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            <div class="settings-label">Turbo Mode (iOS 15)</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="7" width="16" height="8" rx="4" fill="#34C759"/>
+            <circle cx="14" cy="11" r="3" fill="white"/>
+          </svg>
+        </div>
+
+        <div class="settings-item" onclick="showToast('Auto quality: on')">
+          <div class="settings-left">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="2" y="5" width="16" height="10" rx="2" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+              <path d="M8 9L12 10L8 11V9Z" fill="rgba(255,255,255,0.7)"/>
+            </svg>
+            <div class="settings-label">Auto Video Quality</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="7" width="16" height="8" rx="4" fill="#34C759"/>
+            <circle cx="14" cy="11" r="3" fill="white"/>
+          </svg>
+        </div>
+
+        <div class="settings-item" onclick="showToast('Sponsor segments blocked')">
+          <div class="settings-left">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="7.5" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+              <path d="M7 7L13 13M13 7L7 13" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="settings-label">Block Sponsors</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="7" width="16" height="8" rx="4" fill="#34C759"/>
+            <circle cx="14" cy="11" r="3" fill="white"/>
+          </svg>
+        </div>
+
+        <div class="settings-item" onclick="showToast('Version: 15+++ Build 100')">
+          <div class="settings-left">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="7.5" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+              <path d="M10 9V14" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="10" cy="7" r="1" fill="rgba(255,255,255,0.7)"/>
+            </svg>
+            <div class="settings-label">About YouTube15+++</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4L10 8L6 12" stroke="rgba(255,255,255,0.4)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB BAR ===== -->
+  <nav class="tabbar">
+    <div class="tab-item active" id="tab-home" onclick="switchTab('home')">
+      <div class="tab-indicator"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M3 9.5L11 3L19 9.5V19H14V14H8V19H3V9.5Z"
+          id="tab-home-icon"
+          stroke="white" stroke-width="1.6" stroke-linejoin="round" fill="rgba(255,59,48,0.3)"/>
+      </svg>
+      <span class="tab-label">Home</span>
+    </div>
+
+    <div class="tab-item" id="tab-shorts" onclick="switchTab('shorts')">
+      <div class="tab-indicator"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M14 5L9 11H13L9 17L17 10H12L14 5Z"
+          id="tab-shorts-icon"
+          stroke="rgba(255,255,255,0.6)" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+      <span class="tab-label">Shorts</span>
+    </div>
+
+    <!-- CREATE -->
+    <div class="tab-item" onclick="openCreateModal()">
+      <div class="create-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="tab-label">Create</span>
+    </div>
+
+    <div class="tab-item" id="tab-library" onclick="switchTab('library')">
+      <div class="tab-indicator"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M4 5H8V17H4V5ZM9 5H18L14 11L18 17H9V5Z"
+          id="tab-library-icon"
+          stroke="rgba(255,255,255,0.6)" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+      <span class="tab-label">Library</span>
+    </div>
+
+    <div class="tab-item" id="tab-account" onclick="switchTab('account')">
+      <div class="tab-indicator"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <circle cx="11" cy="8.5" r="3.5" id="tab-account-circle"
+          stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+        <path d="M4 19C4 15.686 7.134 13 11 13C14.866 13 18 15.686 18 19"
+          id="tab-account-path"
+          stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="tab-label">Account</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ===== PLAYER MODAL ===== -->
+<div id="playerModal" class="player-modal">
+  <div class="player-topbar">
+    <div class="player-close" onclick="closePlayer()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 8H12M4 8L7 5M4 8L7 11" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div style="flex:1;margin-left:12px;font-size:15px;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis" id="playerTopTitle">Video</div>
+  </div>
+
+  <div class="yt-embed-wrap">
+    <iframe id="ytFrame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <div class="player-info">
+    <div class="player-title" id="playerTitle"></div>
+    <div class="player-channel">
+      <img class="pc-avatar" id="playerAvatar" src="" alt="">
+      <div>
+        <div class="pc-name" id="playerChannel"></div>
+        <div class="pc-subs" id="playerViews"></div>
+      </div>
+    </div>
+
+    <div class="no-acct-notice">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="6.5" stroke="rgba(255,214,10,0.8)" stroke-width="1.3"/>
+        <path d="M8 5V9" stroke="rgba(255,214,10,0.9)" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="8" cy="11" r="0.8" fill="rgba(255,214,10,0.9)"/>
+      </svg>
+      Like and comment features require a Google account
+    </div>
+
+    <div class="action-row">
+      <div class="action-pill disabled">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2C8 2 3 5 3 9C3 10.657 4.343 12 6 12H7V14H9V12H10C11.657 12 13 10.657 13 9C13 5 8 2 8 2Z" stroke="rgba(255,255,255,0.5)" stroke-width="1.3"/>
+          <path d="M6 8L8 6L10 8" stroke="rgba(255,255,255,0.5)" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        Like
+      </div>
+      <div class="action-pill disabled">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 4H13M3 7H10M3 10H8" stroke="rgba(255,255,255,0.5)" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        Comment
+      </div>
+      <div class="action-pill disabled">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 2L14 8L10 14" stroke="rgba(255,255,255,0.5)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 8H14" stroke="rgba(255,255,255,0.5)" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        Share
+      </div>
+      <div class="action-pill disabled">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="6" stroke="rgba(255,255,255,0.5)" stroke-width="1.3"/>
+          <path d="M8 5V8H11" stroke="rgba(255,255,255,0.5)" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        Save
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CREATE MODAL ===== -->
+<div class="overlay-bg" id="overlayBg" onclick="closeCreateModal()"></div>
+<div class="create-modal" id="createModal">
+  <div class="create-handle"></div>
+  <div class="create-title">Create</div>
+  <div class="create-option" onclick="showToast('Upload requires sign in')">
+    <div class="create-opt-icon">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <path d="M13 5V17M7 11L13 5L19 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 21H21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="create-opt-text">
+      <div class="opt-title">Upload Video</div>
+      <div class="opt-sub">Share a video to YouTube</div>
+    </div>
+  </div>
+  <div class="create-option" onclick="showToast('Live stream requires sign in')">
+    <div class="create-opt-icon" style="background:linear-gradient(135deg,#ff3b30,#c0392b)">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <circle cx="13" cy="13" r="4" fill="white"/>
+        <path d="M6 13C6 9.134 9.134 6 13 6" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M20 13C20 9.134 16.866 6 13 6" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M3 13C3 7.477 7.477 3 13 3" stroke="rgba(255,255,255,0.5)" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M23 13C23 7.477 18.523 3 13 3" stroke="rgba(255,255,255,0.5)" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="create-opt-text">
+      <div class="opt-title">Go Live</div>
+      <div class="opt-sub">Start a live stream</div>
+    </div>
+  </div>
+  <div class="create-option" onclick="showToast('Short creation requires sign in')">
+    <div class="create-opt-icon" style="background:linear-gradient(135deg,#5856d6,#af52de)">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <path d="M15 6L10 13H14L10 20L20 12H14L15 6Z" fill="white"/>
+      </svg>
+    </div>
+    <div class="create-opt-text">
+      <div class="opt-title">Create Short</div>
+      <div class="opt-sub">Make a short-form video</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const VIDEOS = [
+  {
+    id: 'dQw4w9WgXcQ',
+    title: 'Rick Astley - Never Gonna Give You Up (Official Music Video)',
+    channel: 'Rick Astley',
+    views: '1.5B views',
+    time: '3 years ago',
+    duration: '3:32',
+    avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_nUMgE1CiW4NqKODIvPaL7AxKf1QVJyIiWjl17v=s88-c-k-c0x00ffffff-no-rj'
+  },
+  {
+    id: 'jNQXAC9IVRw',
+    title: 'Me at the zoo — The first video ever on YouTube',
+    channel: 'jawed',
+    views: '300M views',
+    time: '19 years ago',
+    duration: '0:19',
+    avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_m2a7ZgZn5tQpLB7s4VJ1pLhQgM_JfPTe6KkjKl=s88'
+  },
+  {
+    id: 'kffacxfA7G4',
+    title: 'Baby Shark Dance | #babyshark Most Viewed Video | Animal Songs | PINKFONG Songs for Children',
+    channel: 'Pinkfong! Kids Songs & Stories',
+    views: '13.7B views',
+    time: '7 years ago',
+    duration: '2:17',
+    avatar: 'https://yt3.googleusercontent.com/3e4X32L_6R8aRU_Rb8RobFYBvPzaTzGOSdBNVuJODrFJVBiCELs8HKXJ3JFfY1HEoJ=s88'
+  },
+  {
+    id: 'JGwWNGJdvx8',
+    title: 'Shape of You - Ed Sheeran (Official Music Video)',
+    channel: 'Ed Sheeran',
+    views: '6.3B views',
+    time: '7 years ago',
+    duration: '4:24',
+    avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_mxFp3x5O3Cq8XvUEo7vFd1V1KHSQ5dADGaGqU=s88'
+  },
+  {
+    id: 'hT_nvWreIhg',
+    title: 'Counting Stars - OneRepublic (Official Music Video)',
+    channel: 'OneRepublic',
+    views: '3.8B views',
+    time: '11 years ago',
+    duration: '4:44',
+    avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_n5B8GfjPIGWIrfGFp_y8SHkrBzqX7qSv_SZFQ=s88'
+  },
+  {
+    id: 'CevxZvSJLk8',
+    title: 'Katy Perry - Roar (Official) ft. Kenny Loggins',
+    channel: 'Katy Perry',
+    views: '4.2B views',
+    time: '11 years ago',
+    duration: '4:32',
+    avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_kNbCDV4pQ9d7G5RAbZuI8rLSvzIZ4VjJr3K-1r=s88'
+  },
+  {
+    id: 'OPf0YbXqDm0',
+    title: 'Mark Ronson - Uptown Funk ft. Bruno Mars (Official Music Video)',
+    channel: 'Mark Ronson',
+    views: '5.1B views',
+    time: '9 years ago',
+    duration: '4:30',
+    avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_lEZ9j8OkAe8ZgXI6Oe2A6yS4SQTV7SY6uLKU=s88'
+  },
+  {
+    id: 'YqeW9_5kURI',
+    title: 'See You Again - Wiz Khalifa ft. Charlie Puth (Fast & Furious 7)',
+    channel: 'Wiz Khalifa',
+    views: '6.1B views',
+    time: '9 years ago',
+    duration: '3:58',
+    avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_mPqWx1UwWbDv8kXkP2N3MzYq4nqAO3l5RFkzKn=s88'
+  }
+];
+
+const SHORTS = [
+  { id: 'xFrGuyw1V8s', title: 'Incredible skateboard trick', views: '24M views' },
+  { id: 'Zi_XLOBDo_Y', title: 'Cooking hack you need to know', views: '18M views' },
+  { id: 'uelHwf8o7_U', title: 'Meme compilation 2024', views: '45M views' },
+  { id: 'fRh_vgS2dFE', title: 'Life hack - open bottles faster', views: '12M views' },
+  { id: 'XqZsoesa55w', title: 'Baby dancing is so cute', views: '90M views' },
+  { id: 'nfWlot6h_JM', title: 'How to fold paper crane', views: '8M views' },
+  { id: 'hY7m5jjJ9mM', title: 'Cat vs cucumber reaction', views: '55M views' },
+  { id: 'FTQbiNvZqaY', title: 'Dog learns new tricks in 60s', views: '33M views' }
+];
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(() => {
+      document.getElementById('splash').style.display = 'none';
+      document.getElementById('app').classList.add('show');
+      loadVideos();
+      loadShorts();
+    }, 600);
+  }, 2400);
+});
+
+// ===== LOAD VIDEOS =====
+function loadVideos() {
+  setTimeout(() => {
+    const list = document.getElementById('videoList');
+    document.getElementById('skeletons').remove();
+    VIDEOS.forEach(v => {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.innerHTML = `
+        <div class="thumb-wrap">
+          <img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" alt="${v.title}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${v.id}/mqdefault.jpg'">
+          <div class="duration-badge">${v.duration}</div>
+        </div>
+        <div class="video-meta">
+          <img class="channel-avatar" src="${v.avatar}" alt="${v.channel}" loading="lazy"
+            onerror="this.style.background='#333';this.src='data:image/svg+xml,<svg/>'">
+          <div class="video-info">
+            <div class="video-title">${v.title}</div>
+            <div class="video-subinfo">${v.channel} · ${v.views} · ${v.time}</div>
+          </div>
+          <div class="video-menu">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="4" r="1.5" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="9" cy="9" r="1.5" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="9" cy="14" r="1.5" fill="rgba(255,255,255,0.5)"/>
+            </svg>
+          </div>
+        </div>
+      `;
+      card.onclick = () => openPlayer(v);
+      list.appendChild(card);
+    });
+  }, 800);
+}
+
+// ===== LOAD SHORTS =====
+function loadShorts() {
+  const grid = document.getElementById('shortsGrid');
+  SHORTS.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'short-card';
+    card.innerHTML = `
+      <img src="https://img.youtube.com/vi/${s.id}/mqdefault.jpg" alt="${s.title}" loading="lazy">
+      <div class="short-overlay">
+        <div class="short-title">${s.title}</div>
+        <div class="short-views">${s.views}</div>
+      </div>
+      <div class="short-badge">Shorts</div>
+    `;
+    card.onclick = () => openPlayer(s, true);
+    grid.appendChild(card);
+  });
+}
+
+// ===== TAB SWITCHING =====
+let currentTab = 'home';
+
+function switchTab(tab) {
+  if (tab === currentTab) return;
+
+  // Deactivate current
+  document.getElementById(`tab-${currentTab}`).classList.remove('active');
+  document.getElementById(`page-${currentTab}`).classList.remove('active');
+
+  // Activate new
+  currentTab = tab;
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById(`page-${tab}`).classList.add('active');
+
+  // Scroll to top
+  document.querySelector('.content-area').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== FILTER CHIPS =====
+function setChip(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ===== PLAYER =====
+function openPlayer(video, isShort = false) {
+  const modal = document.getElementById('playerModal');
+  const frame = document.getElementById('ytFrame');
+  document.getElementById('playerTitle').textContent = video.title;
+  document.getElementById('playerTopTitle').textContent = video.title;
+  document.getElementById('playerChannel').textContent = video.channel || 'YouTube';
+  document.getElementById('playerViews').textContent = video.views || '';
+
+  const avatar = document.getElementById('playerAvatar');
+  if (video.avatar) {
+    avatar.src = video.avatar;
+    avatar.style.display = 'block';
+  } else {
+    avatar.style.display = 'none';
+  }
+
+  frame.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&modestbranding=1`;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePlayer() {
+  const modal = document.getElementById('playerModal');
+  modal.classList.remove('open');
+  document.getElementById('ytFrame').src = '';
+  document.body.style.overflow = '';
+}
+
+// ===== CREATE MODAL =====
+function openCreateModal() {
+  document.getElementById('createModal').classList.add('open');
+  document.getElementById('overlayBg').classList.add('show');
+}
+
+function closeCreateModal() {
+  document.getElementById('createModal').classList.remove('open');
+  document.getElementById('overlayBg').classList.remove('show');
+}
+
+// ===== TOAST =====
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ===== SWIPE TO CLOSE PLAYER =====
+let startY = 0;
+document.getElementById('playerModal').addEventListener('touchstart', e => {
+  startY = e.touches[0].clientY;
+}, { passive: true });
+
+document.getElementById('playerModal').addEventListener('touchend', e => {
+  const delta = e.changedTouches[0].clientY - startY;
+  if (delta > 120) closePlayer();
+}, { passive: true });
+
+// ===== KEYBOARD =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closePlayer();
+    closeCreateModal();
+  }
+});
+</script>
+</body>
+</html>
